@@ -1,10 +1,19 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title></title>
+
+    <title>The School Portal</title>
+    <script src="~/Scripts/JavaScript.js"></script>
 </head>
 <body>
+    <form action="/Home/Index" method="post" onsubmit="return validatepassword()">
+        Username:<input id="username" name="username" type="text" maxlength="255" /><br /><br />
+        Password:<input id="password" name="password" type="password" /><br />
+        <input value="Log In" type="submit" />
+    </form>
+
+
+
 
 </body>
 </html>
