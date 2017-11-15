@@ -14,8 +14,8 @@ namespace SchoolsPortal.Models
             SqlConnection conn;
             string myConnectionString;
 
-            myConnectionString = "server=abc;" +
-                "pwd=abc;database=schoolsite;";
+            myConnectionString = "server=a.database.windows.net;uid=ccampagn;" +
+                "pwd=aa;database=schoolsite;";
             conn = new SqlConnection();
             conn.ConnectionString = myConnectionString;
             conn.Open();
