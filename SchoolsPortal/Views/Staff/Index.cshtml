@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>The School Portal</title>
+    <style>
+        #staffs {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            #staffs td, #students th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            #staffs tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
+            #staffs tr:hover {
+                background-color: #ddd;
+            }
+
+            #staffs th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #000000;
+                color: white;
+            }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        li {
+            float: left;
+        }
+
+            li a, .dropbtn {
+                display: inline-block;
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+            }
+
+                li a:hover, .dropdown:hover .dropbtn {
+                    background-color: red;
+                }
+
+            li.dropdown {
+                display: inline-block;
+            }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                text-align: left;
+            }
+
+                .dropdown-content a:hover {
+                    background-color: #f1f1f1
+                }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <ul>
+        <li><a href="~/Home/Index.cshtml">Home</a></li>
+        <li><a href="#news">News</a></li>
+        <li class="dropdown">
+            <a href="javascript:void(0)" class="dropbtn">Dropdown</a>
+            <div class="dropdown-content">
+                <a href="#">Link 1</a>
+                <a href="#">Link 2</a>
+                <a href="#">Link 3</a>
+            </div>
+        </li>
+    </ul>
+    <table id="staffs">
+        <tr>
+            <th>ID</th>
+            <th>User Name</th>
+            <th>First Name</th>
+            <th>Middle Name</th>
+            <th>Last Name</th>
+            <th>Suffix</th>
+            <th>Sex</th>
+            <th>Birth of Date</th>
+            <th>Address 1</th>
+            <th>Address 2</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip Code</th>
+            <th>School</th>
+            <th>Department</th>
+            <th>Position</th>
+            <th>Tenure</th>
+            <th>Hired Date</th>
+        </tr>
+        @foreach (dynamic p in (ViewBag.staffs))
+        {
+            <tr>
+                <td>@p.getcardid()</td>
+                <td>@p.getusercred().getusername()</td>
+                <td>@p.getuserinfo().getname().getfirstname()</td>
+                <td>@p.getuserinfo().getname().getmiddlename()</td>
+                <td>@p.getuserinfo().getname().getlastname()</td>
+                <td>@p.getuserinfo().getname().getsuffix()</td>
+                <td>@p.getuserinfo().getname().getsex()</td>
+                <td>@p.getuserinfo().getname().getbirthofdate().ToShortDateString()</td>
+                <td>@p.getuserinfo().getaddress().getaddress1()</td>
+                <td>@p.getuserinfo().getaddress().getaddress2()</td>
+                <td>@p.getuserinfo().getaddress().getcity()</td>
+                <td>@p.getuserinfo().getaddress().getstate()</td>
+                <td>@p.getuserinfo().getaddress().getzipcode()</td>
+                <td>@p.getschool()</td>
+                <td>@p.getdepartment()</td>
+                <td>@p.getposition()</td>
+                <td>@p.gettenure()</td>
+                <td>@p.gethiredate().ToShortDateString()</td>
+
+            </tr>
+        }
+    </table>
+
+</body>
+</html>

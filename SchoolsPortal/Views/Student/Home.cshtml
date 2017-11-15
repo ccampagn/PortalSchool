@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="~/styles.css">
+</head>
+<body>
+    <ul>
+        <li><a href="~/Home">Home</a></li>
+        <li><a href="#news">News</a></li>
+        <li class="dropdown">
+            <a href="javascript:void(0)" class="dropbtn">Dropdown</a>
+            <div class="dropdown-content">
+                <a href="#">Link 1</a>
+                <a href="#">Link 2</a>
+                <a href="#">Link 3</a>
+            </div>
+        </li>
+    </ul>
+    <table id="tables">
+        <tr>
+            <th>Department</th>
+            <th>Course Number</th>
+            <th>Course Name</th>
+            <th>Name</th>
+        </tr>
+        @foreach (dynamic p in (ViewBag.courses))
+        {
+            <tr>
+                <td>@p.getdepartment()</td>
+                <td>@p.getcoursecode()</td>
+                <td>@p.getcoursename()</td>
+                <td>@p.getteacher()</td>
+            </tr>
+        }
+    </table>
+
+</body>
+</html>
