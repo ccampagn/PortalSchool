@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="~/styles.css">
+    <script src="~/Scripts/JavaScript.js"></script>
+</head>
+<body>
+    <div id="wholestudentpage">
+        <div id="navbar">
+            <ul id="main-menu" class="sm sm-blue">
+                <li><a href="~/Home">Home</a></li>
+                <li><a href="#news">News</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Dropdown</a>
+                    <div class="dropdown-content">
+                        <a href="#">Link 1</a>
+                        <a href="#">Link 2</a>
+                        <a href="#">Link 3</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    <br />
+    <div id="gradeassignment">
+        <table id="tables">
+            <tr>
+                @foreach (dynamic p in (ViewBag.displaygrade))
+                {
+                <th>@p.getcategorytitle()</th>
+                }
+                <th>Final Grade</th>
+            </tr>
+            <tr>
+                @foreach (dynamic p in (ViewBag.displaygrade))
+                {
+                    if (@p.getpercent() == -1)
+                    {
+                    <td>N/A</td>
+                    }
+                    else
+                    {
+                        <td>@(p.getpercent()*100)</td>
+                    }
+                }
+                <td>@(ViewBag.finalgrade*100)</td>
+            </tr>
+            </table>
+            <br />
+            <div id="assignment">
+                <table id="tables">
+                    <tr>
+                        <th>Date</th>
+                        <th>Assignment Name</th>
+                        <th>Grading Period</th>
+                        <th>Category</th>
+                        <th>Points</th>
+                        <th>Possible Points</th>
+                        <th>Percentage</th>
+                    </tr>
+                    @foreach (dynamic p in (ViewBag.assignment))
+            {
+                        <tr>
+                            <td>@p.getduedate().ToShortDateString()</td>
+                            <td>@p.gettitle()</td>
+                            <td>@p.getgradingperiod()</td>
+                            <td>@p.getcategory()</td>
+                            @if (p.getpoints() == -1)
+                            {
+                                <td>-</td>
+                            }
+                            else
+                            {
+                                <td>@p.getpoints()</td>
+                            }
+                            <td>@p.getscores()</td>
+                            @if (p.getpoints() == -1)
+                            {
+                                <td>-</td>
+                            }
+                            else
+                            {
+                                <td>@(p.getpoints() / p.getscores() * 100)%</td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
+</div>
+        </div>
+</body>
+</html>

@@ -18,7 +18,10 @@ namespace SchoolsPortal.Models
             this.password = password;
 
         }
-
+        public int getuserid()
+        {
+            return usercredid;
+        }
         public string getusername()
         {
             return username;

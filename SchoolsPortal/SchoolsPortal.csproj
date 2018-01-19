@@ -141,7 +141,12 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CoursesController.cs" />
+    <Compile Include="Controllers\CourseSelectController.cs" />
+    <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MessageController.cs" />
+    <Compile Include="Controllers\NewsStoriesController.cs" />
     <Compile Include="Controllers\ParentController.cs" />
     <Compile Include="Controllers\StaffController.cs" />
     <Compile Include="Controllers\StudentController.cs" />
@@ -149,10 +154,20 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\address.cs" />
+    <Compile Include="Models\assignment.cs" />
     <Compile Include="Models\course.cs" />
+    <Compile Include="Models\courseselect.cs" />
     <Compile Include="Models\db.cs" />
+    <Compile Include="Models\events.cs" />
+    <Compile Include="Models\gradedisplay.cs" />
+    <Compile Include="Models\gradeperiod.cs" />
+    <Compile Include="Models\message.cs" />
+    <Compile Include="Models\messageboard.cs" />
     <Compile Include="Models\name.cs" />
+    <Compile Include="Models\newstories.cs" />
     <Compile Include="Models\PasswordHash.cs" />
+    <Compile Include="Models\schoolyear.cs" />
+    <Compile Include="Models\sport.cs" />
     <Compile Include="Models\staff.cs" />
     <Compile Include="Models\student.cs" />
     <Compile Include="user.cs" />
@@ -187,6 +202,7 @@
     <Content Include="Models\Scripts\respond.min.js" />
     <Content Include="styles.css" />
     <Content Include="Scripts\JavaScript.js" />
+    <Content Include="Views\Courses\HtmlPage1.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -203,6 +219,11 @@
     <Content Include="Views\Student\Home.cshtml" />
     <Content Include="Views\Staff\Home.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\NewsStories\Index.cshtml" />
+    <Content Include="Views\Courses\Index.cshtml" />
+    <Content Include="Views\CourseSelect\Index.cshtml" />
+    <Content Include="Views\Events\event.cshtml" />
+    <Content Include="Views\Message\message.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

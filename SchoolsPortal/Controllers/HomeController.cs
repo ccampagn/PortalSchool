@@ -24,11 +24,19 @@ namespace SchoolsPortal.Controllers
             }
             if (Session["user"] != null)
             {
-                ViewBag.courses = db.getcourse();
-                return View(geturl());
-                
+                ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
+                return View(geturl(0,0));               
             }
             return View();
+        }
+
+        [HttpGet]
+        public ActionResult schoolyear(int parkname)
+        {
+            db db = new db();
+            ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
+            ViewBag.schoolyear = db.getschoolyear(parkname);
+            return View(geturl(1,parkname));
         }
 
         [HttpPost]
@@ -44,19 +52,18 @@ namespace SchoolsPortal.Controllers
             {
                     status = PasswordHash.ValidatePassword(usercred.getpassword(), hash);
             }
-
             if (status)
             {
-                ViewBag.courses = db.getcourse();
                 Session["user"] = db.getuser(usercred.getusername());
-                return View(geturl());
-                
+                ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
+                ViewBag.schoolyear = db.getschoolyear(0);
+                return View(geturl(0,0));               
             }
             else
             {
                 Response.Write(@"<script language='javascript'>alert('Incorrect Username/Password');</script>");               
             }
-            return RedirectToAction("Index", "Home");
+            return View();
         }
         private string getipaddress()
         {
@@ -64,14 +71,32 @@ namespace SchoolsPortal.Controllers
             userip = Request.UserHostAddress;
             return userip;
         }
-        private string geturl()
+        private string geturl(int type,int year)
         {
+            db db = new db();
             if (((user)Session["user"]).getuserinfo().getusertype() == 1)
             {
+                ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());
+                ViewBag.events = db.getevents(db.getdistrictid(((user)Session["user"]).getusercred().getuserid()));
+                ViewBag.newstories = db.getnewstories(db.getdistrictid(((user)Session["user"]).getusercred().getuserid()));
+                if (type == 0)
+                {
+                    ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),1);
+                    ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),1);
+
+                }
+                else
+                {
+                    ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),year);
+                    ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),year);
+                }
                 return "~/Views/Student/Home.cshtml";
             }
-            if (((user)Session["user"]).getuserinfo().getusertype() == 0)
+            if (((user)Session["user"]).getuserinfo().getusertype() == 2)
             {
+                
+                ViewBag.newstories = db.getnewstories(db.getstaffdistrictid(((user)Session["user"]).getusercred().getuserid()));
+                ViewBag.courses = db.getcoursestaff(((user)Session["user"]).getusercred().getuserid());
                 return "~/Views/Staff/Home.cshtml";
             }
             return "";
