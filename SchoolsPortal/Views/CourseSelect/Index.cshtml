@@ -3,8 +3,35 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
+    <link rel="stylesheet" href="~/styles.css">
+    <script src="~/Scripts/JavaScript.js"></script>
 </head>
 <body>
+    <div id="navbar">
+        <ul id="main-menu" class="sm sm-blue">
+            <li><a href="~/Home">Home</a></li>
+            <li><a href="#news">News</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropbtn">Dropdown</a>
+                <div class="dropdown-content">
+                    <a href="#">Link 1</a>
+                    <a href="#">Link 2</a>
+                    <a href="#">Link 3</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    
+            @foreach (dynamic p in (ViewBag.courses))
+            {
+            <div id="courseselect">
+                @p.getdepartment()-@p.getcoursecode() @p.getcoursename() 3 Credit Hours
+                <br />
+                <br />
+                @p.getdescription()
+            </div>
+            }
+
 
 </body>
 </html>

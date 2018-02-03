@@ -68,7 +68,19 @@
                             <td>@p.getcategory()</td>
                             @if (p.getpoints() == -1)
                             {
-                                <td>-</td>
+                                if (p.gettestsid() != 0)
+                                {
+                                <td>
+                                    <form action="/Courses/Test" method="post">
+                                        <input id="testsid" name="testsid" type="hidden" value="@p.gettestsid()" />
+                                        <input value="Take Test" type="submit" />
+                                    </form>
+                                </td>
+                                }
+                                else
+                                {
+                                    <td>-</td>
+                                }
                             }
                             else
                             {
@@ -77,7 +89,8 @@
                             <td>@p.getscores()</td>
                             @if (p.getpoints() == -1)
                             {
-                                <td>-</td>
+
+                            <td>-</td>
                             }
                             else
                             {

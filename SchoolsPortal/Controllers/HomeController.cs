@@ -76,9 +76,11 @@ namespace SchoolsPortal.Controllers
             db db = new db();
             if (((user)Session["user"]).getuserinfo().getusertype() == 1)
             {
+                //getfilter info
+                ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());
                 ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());
                 ViewBag.events = db.getevents(db.getdistrictid(((user)Session["user"]).getusercred().getuserid()));
-                ViewBag.newstories = db.getnewstories(db.getdistrictid(((user)Session["user"]).getusercred().getuserid()));
+                ViewBag.newstories = db.getnewstories(ViewBag.filter);
                 if (type == 0)
                 {
                     ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),1);
@@ -95,7 +97,7 @@ namespace SchoolsPortal.Controllers
             if (((user)Session["user"]).getuserinfo().getusertype() == 2)
             {
                 
-                ViewBag.newstories = db.getnewstories(db.getstaffdistrictid(((user)Session["user"]).getusercred().getuserid()));
+                ViewBag.newstories = db.getnewstories(ViewBag.filter);
                 ViewBag.courses = db.getcoursestaff(((user)Session["user"]).getusercred().getuserid());
                 return "~/Views/Staff/Home.cshtml";
             }

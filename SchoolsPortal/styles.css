@@ -9,14 +9,48 @@
     min-width: 600px;
     margin: 10px 10px 10px 10px;
 }
+#testsassignment {
+    min-width: 600px;
+    margin-left: 15%;
+    margin-right: 15%;
+    text-align: center
+}
+#testsheader {
+    color: black;
+    font-size: 36px;
+    border: 2px solid black;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom:10px;
+    margin-top: 10px;
+}
+#question {   
+    border: 2px solid black;
+    border-radius: 5px;
+    margin-bottom:10px;
+    margin-top:10px;
+}
 
+#questionheader {
+    font-size: 36px;
+}
+#answers {
+    vertical-align:central;
+    text-align:center;
+    font-size:20px;
+}
 #courses {
     float: left;
     width: 45%;
     min-width: 600px;
     margin: 10px 10px 10px 10px;
 }
-
+#courseselect {
+    font-size: 36px;
+    border: 2px solid black;
+    border-radius: 5px;
+    margin: 10px 10px 10px 10px;
+}
 
 #tables {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;

@@ -34,6 +34,10 @@ namespace SchoolsPortal.Models
             this.grade = grade;
         }
 
+        public course()
+        {
+        }
+
         public int getcourseid()
         {
             return courseid;
@@ -77,6 +81,33 @@ namespace SchoolsPortal.Models
         public  decimal getgrade()
         {
             return grade;
+        }
+        public List<gradedisplay> calcgrade(int course,int userid)//test tomorrow afternoon
+        {
+            db db = new db();
+            List<assignment> assign = db.getallasignment(course, userid);//new type function
+            List<gradedisplay> gradedisplay = db.getgradedisplay(course);//new type function
+            if (db.getcoursegradetype(course) == 1)
+            {
+                for (int x=0;x<gradedisplay.Count;x++)
+                {
+                    if (gradedisplay[x].gettype() == 1)
+                    {
+                        gradedisplay[x].setpercent(db.getpercentgrade(userid, courseid, gradedisplay[x].getgradedisplayid()));
+                    }
+                    if (gradedisplay[x].gettype() == 2)
+                    {
+                        gradedisplay[x].setpercent(db.getpercentgradecategory(userid, courseid, gradedisplay[x].getgradedisplayid()));
+                    }
+                   /* if (gradedisplay[x].getpercent() != -1)
+                    {
+                        finalgrade = finalgrade + gradedisplay[x].getpercent() * gradedisplay[x].getperiodpercent();
+                        totalpercent = totalpercent + gradedisplay[x].getperiodpercent();
+                    }*/
+                }
+                
+            }
+            return gradedisplay;
         }
 
         

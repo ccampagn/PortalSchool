@@ -154,22 +154,27 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\address.cs" />
+    <Compile Include="Models\answers.cs" />
     <Compile Include="Models\assignment.cs" />
+    <Compile Include="Models\categorygrade.cs" />
     <Compile Include="Models\course.cs" />
     <Compile Include="Models\courseselect.cs" />
     <Compile Include="Models\db.cs" />
     <Compile Include="Models\events.cs" />
+    <Compile Include="Models\filterclass.cs" />
     <Compile Include="Models\gradedisplay.cs" />
-    <Compile Include="Models\gradeperiod.cs" />
+    <Compile Include="Scripts\gradeperiod.cs" />
     <Compile Include="Models\message.cs" />
     <Compile Include="Models\messageboard.cs" />
     <Compile Include="Models\name.cs" />
     <Compile Include="Models\newstories.cs" />
     <Compile Include="Models\PasswordHash.cs" />
+    <Compile Include="Models\question.cs" />
     <Compile Include="Models\schoolyear.cs" />
     <Compile Include="Models\sport.cs" />
     <Compile Include="Models\staff.cs" />
     <Compile Include="Models\student.cs" />
+    <Compile Include="Models\testassignment.cs" />
     <Compile Include="user.cs" />
     <Compile Include="Models\usercred.cs" />
     <Compile Include="Models\userinfo.cs" />
@@ -202,7 +207,7 @@
     <Content Include="Models\Scripts\respond.min.js" />
     <Content Include="styles.css" />
     <Content Include="Scripts\JavaScript.js" />
-    <Content Include="Views\Courses\HtmlPage1.html" />
+    <Content Include="styles2.css" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -224,6 +229,8 @@
     <Content Include="Views\CourseSelect\Index.cshtml" />
     <Content Include="Views\Events\event.cshtml" />
     <Content Include="Views\Message\message.cshtml" />
+    <Content Include="Views\Courses\Test.cshtml" />
+    <Content Include="Views\Courses\Result.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
