@@ -36,6 +36,7 @@ namespace SchoolsPortal.Controllers
             db db = new db();
             ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
             ViewBag.schoolyear = db.getschoolyear(parkname);
+            
             return View(geturl(1,parkname));
         }
 
@@ -56,7 +57,7 @@ namespace SchoolsPortal.Controllers
             {
                 Session["user"] = db.getuser(usercred.getusername());
                 ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
-                ViewBag.schoolyear = db.getschoolyear(0);
+                ViewBag.schoolyear = db.getschoolyear(0);               
                 return View(geturl(0,0));               
             }
             else
@@ -85,12 +86,19 @@ namespace SchoolsPortal.Controllers
                 {
                     ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),1);
                     ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),1);
-
+                    
                 }
                 else
                 {
                     ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),year);
                     ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),year);
+                }
+                course a = new course();
+                for (int x = 0; x < ViewBag.courses.Count; x++)
+                {
+                    decimal finalgrade = a.finalcalcgrade(ViewBag.courses[x].getcourseid(), ViewBag.userid);
+                    (ViewBag.courses[x]).setgrade(Math.Round(finalgrade * 100));
+
                 }
                 return "~/Views/Student/Home.cshtml";
             }

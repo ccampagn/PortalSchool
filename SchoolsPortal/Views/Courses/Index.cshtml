@@ -41,10 +41,10 @@
                     }
                     else
                     {
-                        <td>@(p.getpercent()*100)</td>
+                        <td>@(Math.Round(p.getpercent()*100))</td>
                     }
                 }
-                <td>@(ViewBag.finalgrade*100)</td>
+                <td>@(Math.Round(ViewBag.finalgrade*100))</td>
             </tr>
             </table>
             <br />

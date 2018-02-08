@@ -81,10 +81,10 @@ namespace SchoolsPortal.Models
             return list;
         }
 
-        public ArrayList getcategorygrade(int courseid)
+        public List<categorygrade> getcategorygrade(int courseid)
         {
             db db = new db();
-            ArrayList list = new ArrayList();
+            List<categorygrade> category = new List<categorygrade>();
             SqlConnection conn = db.openconn();
             String sql = "SELECT categorygradeid,gradepercent,categoryid FROM [dbo].[categorygrade] where courseid = @course";
             SqlCommand cmd = new SqlCommand(sql, conn);
@@ -92,12 +92,12 @@ namespace SchoolsPortal.Models
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                list.Add(new categorygrade(Convert.ToInt32(rdr["categorygradeid"]), Convert.ToDecimal(rdr["gradepercent"]), Convert.ToInt32(rdr["categoryid"])));
+                category.Add(new categorygrade(Convert.ToInt32(rdr["categorygradeid"]), Convert.ToDecimal(rdr["gradepercent"]), Convert.ToInt32(rdr["categoryid"])));
 
             }
             rdr.Close();
             db.closeconn(conn);
-            return list;
+            return category;
         }
 
         public ArrayList getcourseselect(int districtid)
@@ -403,20 +403,19 @@ namespace SchoolsPortal.Models
             string sql = "";
             if (schoolyear == 0)
             {
-                sql = "SELECT  course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit,classroom.classroomname,starttime,endtime,(SELECT  COALESCE(sum(scores)/sum(points)*100,0) as grade from assignment join assignmentscorers on assignment.assignmentid  = assignmentscorers.assignmentid where sectionid=course.courseid and userid=@userid) as noname FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join classroom on classroom.classroomid=course.classroomid join coursetime on course.courseid=coursetime.courseid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and startpost<GETDATE() and endpost>GETDATE() order by starttime";
+                sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit,classroom.classroomname,starttime,endtime FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join classroom on classroom.classroomid=course.classroomid join coursetime on course.courseid=coursetime.courseid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and startpost<GETDATE() and endpost>GETDATE() order by starttime";
             }
             else
             {
-                sql = "SELECT  course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit,classroom.classroomname,starttime,endtime,(SELECT  COALESCE(sum(scores)/sum(points)*100,0) as grade from assignment join assignmentscorers on assignment.assignmentid  = assignmentscorers.assignmentid where sectionid=course.courseid and userid=@userid) as noname FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join classroom on classroom.classroomid=course.classroomid join coursetime on course.courseid=coursetime.courseid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and schoolyear.schoolyearid=@schoolyear order by starttime";
+                sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit,classroom.classroomname,starttime,endtime FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join classroom on classroom.classroomid=course.classroomid join coursetime on course.courseid=coursetime.courseid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and schoolyear.schoolyearid=@schoolyear order by starttime";
             }
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@userid", userid);
             cmd.Parameters.AddWithValue("@schoolyear", schoolyear);
-            SqlDataReader rdr = cmd.ExecuteReader();
+           SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-               
-                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(),new name(1, rdr["firstname"].ToString(),null, rdr["lastname"].ToString(),null,null,new DateTime()), rdr["classroomname"].ToString(),  Convert.ToDateTime(rdr["starttime"]).ToShortTimeString(), Convert.ToDateTime(rdr["endtime"]).ToShortTimeString(), Convert.ToDecimal(rdr["noname"])));
+                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(),new name(1, rdr["firstname"].ToString(),null, rdr["lastname"].ToString(),null,null,new DateTime()), rdr["classroomname"].ToString(),  Convert.ToDateTime(rdr["starttime"]).ToShortTimeString(), Convert.ToDateTime(rdr["endtime"]).ToShortTimeString(),0));
             }
             rdr.Close();
             db.closeconn(conn);

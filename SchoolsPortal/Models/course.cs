@@ -19,7 +19,7 @@ namespace SchoolsPortal.Models
         private string starttime;
         private string endtime;
         private decimal grade;
-        public course(int courseid,string department,string coursecode,string sectioncode,string coursename,string description,name teacher,string classroom,string starttime,string endtime,decimal grade )
+        public course(int courseid, string department, string coursecode, string sectioncode, string coursename, string description, name teacher, string classroom, string starttime, string endtime, decimal grade)
         {
             this.courseid = courseid;
             this.department = department;
@@ -78,39 +78,79 @@ namespace SchoolsPortal.Models
         {
             return endtime;
         }
-        public  decimal getgrade()
+        public decimal getgrade()
         {
             return grade;
         }
-        public List<gradedisplay> calcgrade(int course,int userid)//test tomorrow afternoon
+        public void setgrade(decimal grade)
+        {
+            this.grade = grade;
+        }
+        public List<gradedisplay> calcdisplaygrade(int course, int userid)//test tomorrow afternoon
         {
             db db = new db();
             List<assignment> assign = db.getallasignment(course, userid);//new type function
             List<gradedisplay> gradedisplay = db.getgradedisplay(course);//new type function
             if (db.getcoursegradetype(course) == 1)
             {
-                for (int x=0;x<gradedisplay.Count;x++)
+                for (int x = 0; x < gradedisplay.Count; x++)
                 {
                     if (gradedisplay[x].gettype() == 1)
                     {
-                        gradedisplay[x].setpercent(db.getpercentgrade(userid, courseid, gradedisplay[x].getgradedisplayid()));
+                        gradedisplay[x].setpercent(db.getpercentgrade(userid, course, gradedisplay[x].getgradedisplayid()));
                     }
                     if (gradedisplay[x].gettype() == 2)
                     {
-                        gradedisplay[x].setpercent(db.getpercentgradecategory(userid, courseid, gradedisplay[x].getgradedisplayid()));
+                        gradedisplay[x].setpercent(db.getpercentgradecategory(userid, course, gradedisplay[x].getgradedisplayid()));
                     }
-                   /* if (gradedisplay[x].getpercent() != -1)
-                    {
-                        finalgrade = finalgrade + gradedisplay[x].getpercent() * gradedisplay[x].getperiodpercent();
-                        totalpercent = totalpercent + gradedisplay[x].getperiodpercent();
-                    }*/
                 }
-                
+
+
             }
+            else
+            {
+                List<categorygrade> category = db.getcategorygrade(course);
+                decimal point = 0;
+                foreach (dynamic p in (gradedisplay))
+                {
+                    if (p.gettype() == 1)
+                    {
+                        foreach (dynamic s in (category))
+                        {
+                            point = point + (s.getgradepercent() * db.getcategoriesgrade(course, userid, p.getgradedisplayid(), s.getcategoryid()));
+                        }
+                        p.setpercent(point);
+                        point = 0;
+                    }
+                    if (p.gettype() == 2)
+                    {
+                        p.setpercent(db.getpercentgradecategory(userid, course, p.getgradedisplayid()));
+                    }
+                }
+            }
+
             return gradedisplay;
         }
+        public decimal calcgradedisplay(List<gradedisplay> gradedisplay)
+        {
+            decimal finalgrade = 0;
+            decimal percenttotal = 0;
+            for (int x = 0; x < gradedisplay.Count; x++)
+            {
 
-        
+                if (gradedisplay[x].getpercent() != -1)
+                {
+                    percenttotal = percenttotal + gradedisplay[x].getperiodpercent() * gradedisplay[x].getpercent();
+                    finalgrade = finalgrade + gradedisplay[x].getperiodpercent();
+                }
 
+            }
+
+            return percenttotal / finalgrade;
+        }
+        public decimal finalcalcgrade(int course, int userid)
+        {
+            return calcgradedisplay(calcdisplaygrade(course, userid));
+        }
     }
 }

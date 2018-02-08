@@ -51,7 +51,10 @@ namespace SchoolsPortal.Controllers
             //move to course class soonest
             db db = new db();
             ViewBag.assignment = db.getallasignment(coursesid, userid);
-            ViewBag.displaygrade = db.getgradedisplay(coursesid);
+            course a = new course();
+            ViewBag.displaygrade = a.calcdisplaygrade(coursesid, userid);
+            ViewBag.finalgrade = a.calcgradedisplay(ViewBag.displaygrade);
+            /*ViewBag.displaygrade = db.getgradedisplay(coursesid);
             decimal finalgrade = 0;
             decimal totalpercent = 0;
 
@@ -101,7 +104,7 @@ namespace SchoolsPortal.Controllers
                     }
                 }
             }
-            ViewBag.finalgrade = finalgrade/totalpercent;
+            ViewBag.finalgrade = finalgrade/totalpercent;*/
             ViewBag.messageboard = db.getmessageboard(coursesid);
             if (userid == ((user)Session["user"]).getusercred().getuserid())
             {
