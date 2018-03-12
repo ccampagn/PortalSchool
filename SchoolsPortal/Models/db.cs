@@ -15,7 +15,7 @@ namespace SchoolsPortal.Models
             SqlConnection conn;
             string myConnectionString;
 
-            
+
             conn = new SqlConnection();
             conn.ConnectionString = myConnectionString;
             conn.Open();
