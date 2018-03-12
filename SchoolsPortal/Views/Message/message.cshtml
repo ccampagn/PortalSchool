@@ -45,5 +45,28 @@
             </table>
         </div>
     </div>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <div id="divEmp">
+
+
+        @using (Ajax.BeginForm("MessageMaster", "Message", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "divEmp" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+
+                <hr />
+                Message: @Html.TextBox("text")
+                <input type="submit" value="Post" class="btn btn-primary" />
+                <hr />
+
+
+
+            </div>
+        }
+    </div>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script> 
 </body>
 </html>

@@ -26,8 +26,8 @@
     <br />
     <div id="homepage">
         <div id="selectyear">
-            <form action="/Home/schoolyear" method="get">
-                School Year:<select name="parkname" id="parkname" onchange="AddDistrict()">
+            <form action="/Home/schoolyear" name="test" method="get">
+                School Year:<select name="parkname" id="parkname" onchange="testing()">
                     <option value="0"></option>
                     @foreach (dynamic p in (ViewBag.schoolyear))
             {
@@ -41,9 +41,9 @@
                         }
                     }
                 </select>
-                <input value="Submit" type="submit" />
             </form>
         </div>
+
         <div id="homepanel">
         <div id="courses">
             <div id="coureslist">

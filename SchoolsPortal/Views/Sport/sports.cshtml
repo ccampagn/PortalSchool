@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>test</title>
+    <link rel="stylesheet" href="~/styles.css">
+    <script src="~/Scripts/JavaScript.js"></script>
+</head>
+<body>
+    <table id="tables">
+        <tr>
+            <th>Date</th>
+            <th>Opp Name</th>
+            <th>Your Score</th>
+            <th>Opp Score</th>
+
+        </tr>
+        @foreach (dynamic p in (ViewBag.sportresult))
+            {
+            <tr>
+                <td>@p.getdate()</td>
+                <td>@p.getoppname()</td>
+                <td>@p.getyourscore()</td>
+                <td>@p.getoppscore()</td>              
+            </tr>
+        }
+    </table>
+
+</body>
+</html>

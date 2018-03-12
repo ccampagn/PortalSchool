@@ -148,6 +148,7 @@
     <Compile Include="Controllers\MessageController.cs" />
     <Compile Include="Controllers\NewsStoriesController.cs" />
     <Compile Include="Controllers\ParentController.cs" />
+    <Compile Include="Controllers\SportController.cs" />
     <Compile Include="Controllers\StaffController.cs" />
     <Compile Include="Controllers\StudentController.cs" />
     <Compile Include="Global.asax.cs">
@@ -163,6 +164,8 @@
     <Compile Include="Models\events.cs" />
     <Compile Include="Models\filterclass.cs" />
     <Compile Include="Models\gradedisplay.cs" />
+    <Compile Include="Models\messmodel.cs" />
+    <Compile Include="Models\sportresult.cs" />
     <Compile Include="Scripts\gradeperiod.cs" />
     <Compile Include="Models\message.cs" />
     <Compile Include="Models\messageboard.cs" />
@@ -231,6 +234,7 @@
     <Content Include="Views\Message\message.cshtml" />
     <Content Include="Views\Courses\Test.cshtml" />
     <Content Include="Views\Courses\Result.cshtml" />
+    <Content Include="Views\Sport\sports.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

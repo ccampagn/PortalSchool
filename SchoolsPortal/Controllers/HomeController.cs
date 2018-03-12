@@ -77,10 +77,9 @@ namespace SchoolsPortal.Controllers
             db db = new db();
             if (((user)Session["user"]).getuserinfo().getusertype() == 1)
             {
-                //getfilter info
                 ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());
                 ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());
-                ViewBag.events = db.getevents(db.getdistrictid(((user)Session["user"]).getusercred().getuserid()));
+                ViewBag.events = db.getevents(ViewBag.filter);
                 ViewBag.newstories = db.getnewstories(ViewBag.filter);
                 if (type == 0)
                 {

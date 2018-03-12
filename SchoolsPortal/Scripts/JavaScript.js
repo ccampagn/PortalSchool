@@ -7,3 +7,6 @@
     }
     return true;
 }
+function testing() {
+    document.test.submit();
+}

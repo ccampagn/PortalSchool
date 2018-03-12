@@ -15,13 +15,31 @@ namespace SchoolsPortal.Models
             SqlConnection conn;
             string myConnectionString;
 
-            myConnectionString = "server=a.database.windows.net;uid=ccampagn;" +
-               "pwd=aa;database=schoolsite;";
+            
             conn = new SqlConnection();
             conn.ConnectionString = myConnectionString;
             conn.Open();
             return conn;
 
+        }
+
+        public ArrayList getsportresult(int sportlistid)
+        {
+            db db = new db();
+            ArrayList list = new ArrayList();
+            SqlConnection conn = db.openconn();
+            String sql = "SELECT sportresultid,date,oppname,yourscore,oppscore FROM [dbo].[sportresult]  where sportlistid=@sportlistid";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@sportlistid", sportlistid);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(new sportresult(Convert.ToInt32(rdr["sportresultid"]), Convert.ToDateTime(rdr["date"]), rdr["oppname"].ToString(), Convert.ToDecimal(rdr["yourscore"]), Convert.ToDecimal(rdr["oppscore"])));
+
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return list;
         }
 
         public ArrayList getcoursepick(int districtid)
@@ -41,6 +59,19 @@ namespace SchoolsPortal.Models
             rdr.Close();
             db.closeconn(conn);
             return list;
+        }
+
+        public void insertmessage(int userid, int messageid, string text)
+        {
+            db db = new db();
+            SqlConnection conn = db.openconn();
+            string sql = "INSERT INTO message (datesent,messagethreadid,messfrom,messagetext) VALUES (getdate(),@messagethreadid,@messfrom,@messagetext)";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@messagethreadid", messageid);
+            cmd.Parameters.AddWithValue("@messfrom", userid);
+            cmd.Parameters.AddWithValue("@messagetext", text);
+            cmd.ExecuteNonQuery();
+            db.closeconn(conn);
         }
 
         public ArrayList getgradeperiod(int userid)
@@ -118,25 +149,55 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return list;
         }
-
-        public ArrayList getevents(int districtid)
+ 
+        public ArrayList getevents(filterclass filter)
         {
                 db db = new db();
-                ArrayList events = new ArrayList();
+            ArrayList events = new ArrayList();
                 SqlConnection conn = db.openconn();
-            String sql = "SELECT eventid,eventtitle,description,startdate FROM [dbo].[event] where districtid = @districtid and postdate<GETDATE() and startdate>=DATEADD(dd, -1, GETDATE())";
-                SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.Parameters.AddWithValue("@districtid", districtid);
-                SqlDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
+            String sql = "SELECT event.eventid,event.eventtitle,event.description,event.startdate FROM [dbo].[eventdisplay] join event on event.eventid =eventdisplay.eventdisplayid join display on display.displayid = eventdisplay.displayid   where districtid = @districtid and postdate<GETDATE() and startdate>=DATEADD(dd, -1, GETDATE()) AND(courseid = 0";
+            for (int x = 0; x < filter.getcourse().Count; x++)
+            {
+                sql = sql + " OR courseid = @course" + x;
+            }
+            sql = sql + ") AND(sectionid = 0";
+            for (int x = 0; x < filter.getsection().Count; x++)
+            {
+                sql = sql + " OR sectionid = @section" + x;
+            }
+            sql = sql + ") AND(teacherid = 0";
+            for (int x = 0; x < filter.getteacher().Count; x++)
+            {
+                sql = sql + " OR teacherid = @teacher" + x;
+            }
+            sql = sql + ")";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@districtid", filter.getdistrict());
+            cmd.Parameters.AddWithValue("@schoolid", filter.getschool());
+            cmd.Parameters.AddWithValue("@gradeid", filter.getgrade());
+            for (int x = 0; x < filter.getcourse().Count; x++)
+            {
+                cmd.Parameters.AddWithValue("@course" + x, filter.getcourse()[x]);
+            }
+            for (int x = 0; x < filter.getsection().Count; x++)
+            {
+                cmd.Parameters.AddWithValue("@section" + x, filter.getsection()[x]);
+            }
+            for (int x = 0; x < filter.getteacher().Count; x++)
+            {
+                cmd.Parameters.AddWithValue("@teacher" + x, filter.getteacher()[x]);
+            }
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
                 events.Add(new events(Convert.ToInt32(rdr["eventid"]), rdr["eventtitle"].ToString(), rdr["description"].ToString(), Convert.ToDateTime(rdr["startdate"])));
-
-                }
-                rdr.Close();
+            }
+            rdr.Close();
             db.closeconn(conn);
             return events;
         }
+
+        
 
         public events getsingleevents(int eventid)
         {
