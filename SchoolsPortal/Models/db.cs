@@ -14,8 +14,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;
             string myConnectionString;
-            
-
+           
             conn = new SqlConnection();
             conn.ConnectionString = myConnectionString;
             conn.Open();
@@ -152,10 +151,10 @@ namespace SchoolsPortal.Models
  
         public ArrayList getevents(filterclass filter)
         {
-                db db = new db();
+            db db = new db();
             ArrayList events = new ArrayList();
-                SqlConnection conn = db.openconn();
-            String sql = "SELECT event.eventid,event.eventtitle,event.description,event.startdate FROM [dbo].[eventdisplay] join event on event.eventid =eventdisplay.eventdisplayid join display on display.displayid = eventdisplay.displayid   where districtid = @districtid and postdate<GETDATE() and startdate>=DATEADD(dd, -1, GETDATE()) AND(courseid = 0";
+            SqlConnection conn = db.openconn();
+            String sql = "SELECT * FROM ( SELECT event.eventid,event.eventtitle,event.description,event.startdate,  ROW_NUMBER() OVER(PARTITION BY eventtitle ORDER BY event.eventid DESC) rn FROM Event join eventdisplay on event.eventid = eventdisplay.eventid join display on eventdisplay.displayid = display.displayid where districtid = @districtid and postdate<GETDATE() and startdate>=DATEADD(dd, -1, GETDATE()) AND(courseid = 0";
             for (int x = 0; x < filter.getcourse().Count; x++)
             {
                 sql = sql + " OR courseid = @course" + x;
@@ -170,7 +169,7 @@ namespace SchoolsPortal.Models
             {
                 sql = sql + " OR teacherid = @teacher" + x;
             }
-            sql = sql + ")";
+            sql = sql + ") ) a WHERE rn = 1 ";
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@districtid", filter.getdistrict());
             cmd.Parameters.AddWithValue("@schoolid", filter.getschool());
