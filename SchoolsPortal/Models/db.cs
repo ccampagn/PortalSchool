@@ -14,7 +14,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;
             string myConnectionString;
-           
+            
             conn = new SqlConnection();
             conn.ConnectionString = myConnectionString;
             conn.Open();
@@ -615,29 +615,29 @@ namespace SchoolsPortal.Models
             db db = new db();
             ArrayList newstories = new ArrayList();
             SqlConnection conn = db.openconn();
-            String sql = "SELECT newstories.newstoriesid,userinfo.firstname,userinfo.middlename,userinfo.lastname,userinfo.suffix,newstories.postdate,newstories.title,newstories.body FROM [dbo].[newstories] join userinfo on newstories.authorid = userinfo.userid where startdate<GETDATE() AND enddate>GETDATE() AND (distinctid = @districtid OR distinctid =0) AND (schoolid = @schoolid OR schoolid = 0) AND (gradeid = @gradeid OR gradeid =0) AND (courseid = 0";
-            for(int x = 0; x < filter.getcourse().Count; x++)
+            String sql = "SELECT * FROM ( SELECT newstories.newstoriesid,userinfo.firstname,userinfo.middlename,userinfo.lastname,userinfo.suffix,newstories.postdate,newstories.title,newstories.body,  ROW_NUMBER() OVER(PARTITION BY newstories.newstoriesid ORDER BY newstories.title DESC) rn FROM newstories join newstoriesdisplay on newstories.newstoriesid = newstoriesdisplay.newstoriesid join display on newstoriesdisplay.displayid = display.displayid join userinfo on newstories.authorid = userinfo.userid where districtid = @districtid and postdate<GETDATE() and startdate<GETDATE() AND enddate>GETDATE() AND(display.courseid = 0";
+            for (int x = 0; x < filter.getcourse().Count; x++)
             {
-                sql = sql + " OR courseid = @course"+x ;
+                sql = sql + " OR display.courseid = @course" + x;
             }
-            sql = sql + ") AND(sectionid = 0";
+            sql = sql + ") AND(display.sectionid = 0";
             for (int x = 0; x < filter.getsection().Count; x++)
             {
-                sql = sql + " OR sectionid = @section" + x;
+                sql = sql + " OR display.sectionid = @section" + x;
             }
-            sql = sql + ") AND(teacherid = 0";
+            sql = sql + ") AND(display.teacherid = 0";
             for (int x = 0; x < filter.getteacher().Count; x++)
             {
-                sql = sql + " OR teacherid = @teacher" + x;
+                sql = sql + " OR display.teacherid = @teacher" + x;
             }
-            sql = sql + ")";
+            sql = sql + ") ) a WHERE rn = 1 ";
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@districtid", filter.getdistrict());
             cmd.Parameters.AddWithValue("@schoolid", filter.getschool());
             cmd.Parameters.AddWithValue("@gradeid", filter.getgrade());
             for (int x = 0; x < filter.getcourse().Count; x++)
             {
-                cmd.Parameters.AddWithValue("@course"+x, filter.getcourse()[x]);
+                cmd.Parameters.AddWithValue("@course" + x, filter.getcourse()[x]);
             }
             for (int x = 0; x < filter.getsection().Count; x++)
             {
@@ -651,7 +651,6 @@ namespace SchoolsPortal.Models
             while (rdr.Read())
             {
                 newstories.Add(new newstories(Convert.ToInt32(rdr["newstoriesid"]), Convert.ToDateTime(rdr["postdate"]), rdr["title"].ToString(), rdr["body"].ToString(), new name(0, rdr["firstname"].ToString(), rdr["middlename"].ToString(), rdr["lastname"].ToString(), rdr["suffix"].ToString(), null, new DateTime())));
-
             }
             rdr.Close();
             db.closeconn(conn);
