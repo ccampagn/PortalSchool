@@ -58,8 +58,7 @@
                         <th>Course Name</th>
                         <th>Teacher Name</th>
                         <th>Classroom</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
+                        <th>Period</th>
                         <th>Grade</th>
                     </tr>
                     @foreach (dynamic p in (ViewBag.courses))
@@ -71,8 +70,7 @@
                             <td><a href="/courses?coursesid=@p.getcourseid()&userid=@ViewBag.userid">@p.getcoursename()</a></td>
                             <td>@p.getteacher().getfirstname() @p.getteacher().getlastname()</td>
                             <td>@p.getclassroom()</td>
-                            <td>@p.getstarttime()</td>
-                            <td>@p.getendtime()</td>
+                            <td>@p.getperiod()</td>
                             <td>@p.getgrade()</td>
                         </tr>
                     }
@@ -134,13 +132,19 @@
                     <tr>
                         <th colspan="3">News Stories</th>
                     </tr>
-
+                    <tr>
+                        <th>Date Posted</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                    </tr>
                     @foreach (dynamic p in (ViewBag.newstories))
-            {
-                        <tr>
-                            <td><a href="/newsstories?newstoriesid=@p.getnewstoriesid()">@p.gettitle()</a></td>
-                        </tr>
-                    }
+    {
+                    <tr>
+                        <td>@p.getposttime().ToShortDateString()</td>
+                        <td><a href="/newsstories?newstoriesid=@p.getnewstoriesid()">@p.gettitle()</a></td>
+                        <td>@p.getauthor().getfirstname() @p.getauthor().getlastname()</td>
+                    </tr>
+}
                 </table>
             </div>
             <div id="messages">

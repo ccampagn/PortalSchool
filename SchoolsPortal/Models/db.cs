@@ -52,7 +52,7 @@ namespace SchoolsPortal.Models
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                list.Add(new course(Convert.ToInt32(rdr["sectionid"]), rdr["department"].ToString(),rdr["coursenumber"].ToString(),null, rdr["coursename"].ToString(), rdr["description"].ToString(),null,null,null,null, 0));
+                //list.Add(new course(Convert.ToInt32(rdr["sectionid"]), rdr["department"].ToString(),rdr["coursenumber"].ToString(),null, rdr["coursename"].ToString(), rdr["description"].ToString(),null,null,null,null, 0));
 
             }
             rdr.Close();
@@ -154,7 +154,7 @@ namespace SchoolsPortal.Models
             db db = new db();
             ArrayList events = new ArrayList();
             SqlConnection conn = db.openconn();
-            String sql = "SELECT * FROM ( SELECT event.eventid,event.eventtitle,event.description,event.startdate,  ROW_NUMBER() OVER(PARTITION BY eventtitle ORDER BY event.eventid DESC) rn FROM Event join eventdisplay on event.eventid = eventdisplay.eventid join display on eventdisplay.displayid = display.displayid where districtid = @districtid and postdate<GETDATE() and startdate>=DATEADD(dd, -1, GETDATE()) AND(courseid = 0";
+            String sql = "SELECT * FROM ( SELECT event.eventid,event.eventtitle,event.description,event.startdate,  ROW_NUMBER() OVER(PARTITION BY event.eventid ORDER BY event.startdate) rn FROM Event join eventdisplay on event.eventid = eventdisplay.eventid join display on eventdisplay.displayid = display.displayid where districtid = @districtid and postdate<GETDATE() and startdate>=DATEADD(dd, -1, GETDATE()) AND(courseid = 0";
             for (int x = 0; x < filter.getcourse().Count; x++)
             {
                 sql = sql + " OR courseid = @course" + x;
@@ -223,7 +223,7 @@ namespace SchoolsPortal.Models
             db db = new db();
             ArrayList message = new ArrayList();
             SqlConnection conn = db.openconn();
-            String sql = "select   messagethread.messagethreadid,messagethread.threadtitle,message.datesent, message.messagetext from usermessage join messagethread on usermessage.messagethreadid = messagethread.messagethreadid join message on messagethread.messagethreadid = message.messagethreadid  where usermessage.userid=@userid order by messagethread.messagethreadid,message.datesent desc";
+            String sql = "select messagethread.messagethreadid,messagethread.threadtitle,message.datesent, message.messagetext from usermessage join messagethread on usermessage.messagethreadid = messagethread.messagethreadid join message on messagethread.messagethreadid = message.messagethreadid  where usermessage.userid=@userid order by messagethread.messagethreadid,message.datesent desc";
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@userid", userid);
             SqlDataReader rdr = cmd.ExecuteReader();
@@ -463,11 +463,11 @@ namespace SchoolsPortal.Models
             string sql = "";
             if (schoolyear == 0)
             {
-                sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit,classroom.classroomname,starttime,endtime FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join classroom on classroom.classroomid=course.classroomid join coursetime on course.courseid=coursetime.courseid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and startpost<GETDATE() and endpost>GETDATE() order by starttime";
+                sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit,classroom.classroomname,period,dayalt FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join classroom on classroom.classroomid=course.classroomid join coursetime on course.courseid=coursetime.courseid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and startpost<GETDATE() and endpost>GETDATE() order by period";
             }
             else
             {
-                sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit,classroom.classroomname,starttime,endtime FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join classroom on classroom.classroomid=course.classroomid join coursetime on course.courseid=coursetime.courseid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and schoolyear.schoolyearid=@schoolyear order by starttime";
+                sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit,classroom.classroomname,period,dayalt FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join classroom on classroom.classroomid=course.classroomid join coursetime on course.courseid=coursetime.courseid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and schoolyear.schoolyearid=@schoolyear order by period";
             }
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@userid", userid);
@@ -475,7 +475,7 @@ namespace SchoolsPortal.Models
            SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(),new name(1, rdr["firstname"].ToString(),null, rdr["lastname"].ToString(),null,null,new DateTime()), rdr["classroomname"].ToString(),  Convert.ToDateTime(rdr["starttime"]).ToShortTimeString(), Convert.ToDateTime(rdr["endtime"]).ToShortTimeString(),0));
+                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(),new name(1, rdr["firstname"].ToString(),null, rdr["lastname"].ToString(),null,null,new DateTime()), rdr["classroomname"].ToString(), rdr["period"].ToString() + rdr["dayalt"].ToString(), 0));
             }
             rdr.Close();
             db.closeconn(conn);
@@ -531,7 +531,7 @@ namespace SchoolsPortal.Models
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), null,null,null,null,0));
+               // course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), null,null,null,null,0));
             }
             rdr.Close();
             db.closeconn(conn);
@@ -615,7 +615,7 @@ namespace SchoolsPortal.Models
             db db = new db();
             ArrayList newstories = new ArrayList();
             SqlConnection conn = db.openconn();
-            String sql = "SELECT * FROM ( SELECT newstories.newstoriesid,userinfo.firstname,userinfo.middlename,userinfo.lastname,userinfo.suffix,newstories.postdate,newstories.title,newstories.body,  ROW_NUMBER() OVER(PARTITION BY newstories.newstoriesid ORDER BY newstories.title DESC) rn FROM newstories join newstoriesdisplay on newstories.newstoriesid = newstoriesdisplay.newstoriesid join display on newstoriesdisplay.displayid = display.displayid join userinfo on newstories.authorid = userinfo.userid where districtid = @districtid and postdate<GETDATE() and startdate<GETDATE() AND enddate>GETDATE() AND(display.courseid = 0";
+            String sql = "SELECT * FROM ( SELECT newstories.newstoriesid,userinfo.firstname,userinfo.middlename,userinfo.lastname,userinfo.suffix,newstories.postdate,newstories.title,newstories.body,  ROW_NUMBER() OVER(PARTITION BY newstories.newstoriesid ORDER BY newstories.postdate) rn FROM newstories join newstoriesdisplay on newstories.newstoriesid = newstoriesdisplay.newstoriesid join display on newstoriesdisplay.displayid = display.displayid join userinfo on newstories.authorid = userinfo.userid where districtid = @districtid and postdate<GETDATE() and startdate<GETDATE() AND enddate>GETDATE() AND(display.courseid = 0";
             for (int x = 0; x < filter.getcourse().Count; x++)
             {
                 sql = sql + " OR display.courseid = @course" + x;
