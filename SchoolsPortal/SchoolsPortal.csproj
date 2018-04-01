@@ -46,10 +46,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13\lib\itextsharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="PdfSharp, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -149,6 +158,7 @@
     <Compile Include="Controllers\MessageController.cs" />
     <Compile Include="Controllers\NewsStoriesController.cs" />
     <Compile Include="Controllers\ParentController.cs" />
+    <Compile Include="Controllers\ReportCardController.cs" />
     <Compile Include="Controllers\SportController.cs" />
     <Compile Include="Controllers\StaffController.cs" />
     <Compile Include="Controllers\StudentController.cs" />
@@ -161,11 +171,14 @@
     <Compile Include="Models\categorygrade.cs" />
     <Compile Include="Models\course.cs" />
     <Compile Include="Models\courseselect.cs" />
+    <Compile Include="Models\createpdf.cs" />
     <Compile Include="Models\db.cs" />
     <Compile Include="Models\events.cs" />
     <Compile Include="Models\filterclass.cs" />
     <Compile Include="Models\gradedisplay.cs" />
     <Compile Include="Models\messmodel.cs" />
+    <Compile Include="Models\reportcard.cs" />
+    <Compile Include="Models\reportcarddisplay.cs" />
     <Compile Include="Models\sportresult.cs" />
     <Compile Include="Scripts\gradeperiod.cs" />
     <Compile Include="Models\message.cs" />
@@ -236,6 +249,7 @@
     <Content Include="Views\Courses\Test.cshtml" />
     <Content Include="Views\Courses\Result.cshtml" />
     <Content Include="Views\Sport\sports.cshtml" />
+    <Content Include="Views\ReportCard\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
