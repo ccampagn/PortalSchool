@@ -12,21 +12,29 @@ namespace SchoolsPortal.Controllers
         // GET: Message
         public ActionResult Index(int messageid)
         {
-            db db = new db();
-            Session["messageid"] = messageid;
-            ViewBag.Message = db.getmessagethread(messageid);
-            return View("~/Views/Message/message.cshtml");
+            if (Session["user"] != null)
+            {
+                db db = new db();
+                Session["messageid"] = messageid;
+                ViewBag.Message = db.getmessagethread(messageid);
+                return View("~/Views/Message/message.cshtml");
+            }
+            return RedirectToAction("Index", "Home");
         }
         [HttpPost]
         public ActionResult MessageMaster(messmodel obj)
         {
-            db db = new db();
-            //insert into database
-            int messageid = (int)Session["messageid"];
-            db.insertmessage(((user)Session["user"]).getusercred().getuserid(),messageid, obj.text);
-            ViewBag.Message = db.getmessagethread(messageid);
-            ModelState.Clear();
-            return PartialView("message");
+            if (Session["user"] != null)
+            {
+                db db = new db();
+                //insert into database
+                int messageid = (int)Session["messageid"];
+                db.insertmessage(((user)Session["user"]).getusercred().getuserid(), messageid, obj.text);
+                ViewBag.Message = db.getmessagethread(messageid);
+                ModelState.Clear();
+                return PartialView("message");
+            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }

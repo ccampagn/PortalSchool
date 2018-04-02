@@ -13,9 +13,13 @@ namespace SchoolsPortal.Controllers
 
         public ActionResult Index(int eventid,int userid)
         {
-            db db = new db();
-            ViewBag.Event = db.getsingleevents(eventid);           
-            return View("~/Views/Events/event.cshtml");
+            if (userid == ((user)Session["user"]).getusercred().getuserid())
+            {
+                db db = new db();
+                ViewBag.Event = db.getsingleevents(eventid);
+                return View("~/Views/Events/event.cshtml");
+            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }

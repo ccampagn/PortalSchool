@@ -25,7 +25,7 @@ namespace SchoolsPortal.Controllers
             if (Session["user"] != null)
             {
                 ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
-                return View(geturl(0,0));               
+                return View(geturl(0,0));
             }
             return View();
         }
@@ -33,11 +33,14 @@ namespace SchoolsPortal.Controllers
         [HttpGet]
         public ActionResult schoolyear(int parkname)
         {
-            db db = new db();
-            ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
-            ViewBag.schoolyear = db.getschoolyear(parkname);
-            
-            return View(geturl(1,parkname));
+            if (Session["user"] != null)
+            {
+                db db = new db();
+                ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
+                ViewBag.schoolyear = db.getschoolyear(parkname);
+                return View(geturl(1, parkname));
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]

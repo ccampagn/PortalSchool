@@ -11,14 +11,18 @@ namespace SchoolsPortal.Controllers
     {
         public ActionResult Index(int newstoriesid)
         {
-            db db = new db();
-            //   int value = Convert.ToInt32(Request["newstoriesid"]);
-            ViewBag.news  = db.getnewstoriesinfo(newstoriesid);
-            if (ViewBag.news == null)
+            if (Session["user"] != null)
             {
-                return View("~/Views/Shared/Error.cshtml");
+                db db = new db();
+                //   int value = Convert.ToInt32(Request["newstoriesid"]);
+                ViewBag.news = db.getnewstoriesinfo(newstoriesid);
+                if (ViewBag.news == null)
+                {
+                    return View("~/Views/Shared/Error.cshtml");
+                }
+                return View();
             }
-            return View();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

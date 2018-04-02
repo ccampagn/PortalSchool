@@ -12,9 +12,13 @@ namespace SchoolsPortal.Controllers
         // GET: Sport
         public ActionResult Index(int sportid, int userid)
         {
-            db db = new db();
-            ViewBag.sportresult = db.getsportresult(sportid);
-            return View("~/Views/Sport/sports.cshtml");
+            if (Session["user"] != null)
+            {
+                db db = new db();
+                ViewBag.sportresult = db.getsportresult(sportid);
+                return View("~/Views/Sport/sports.cshtml");
+            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }

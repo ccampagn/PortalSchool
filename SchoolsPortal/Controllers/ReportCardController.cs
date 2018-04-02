@@ -17,30 +17,39 @@ namespace SchoolsPortal.Controllers
         // GET: ReportCard
         public ActionResult Index()
         {
-            db db = new db();
-            ViewBag.reportcard=db.getschoolyears(((user)Session["user"]).getusercred().getuserid());
-            return View();
+
+            if (Session["user"] != null)
+            {
+                db db = new db();
+                ViewBag.reportcard = db.getschoolyears(((user)Session["user"]).getusercred().getuserid());
+                return View();
+            }
+            return RedirectToAction("Index", "Home");
         }
         [HttpPost]
         public ActionResult Report()
         {
-            int schoolyearid = Convert.ToInt32(Request["schoolyearid"]);
-            db db = new db();
-           List<reportcarddisplay> courseid = db.getcourseid(schoolyearid, ((user)Session["user"]).getusercred().getuserid());
-            course a = new course();
-            for (int x = 0; x < courseid.Count; x++)
+            if (Session["user"] != null)
             {
-               courseid[x].setlettergrade(db.getlettergrade(((user)Session["user"]).getusercred().getuserid(),100*a.finalcalcgrade(Convert.ToInt32(courseid[x].getcourseid()), Convert.ToInt32(Request["schoolyearid"]))));
-            }
-            createpdf pdf = new createpdf();
-            //pdf.createpass();
-            ShowPdf(CreatePDF2(courseid));
+                int schoolyearid = Convert.ToInt32(Request["schoolyearid"]);
+                db db = new db();
+                List<reportcarddisplay> courseid = db.getcourseid(schoolyearid, ((user)Session["user"]).getusercred().getuserid());
+                course a = new course();
+                for (int x = 0; x < courseid.Count; x++)
+                {
+                    courseid[x].setlettergrade(db.getlettergrade(((user)Session["user"]).getusercred().getuserid(), 100 * a.finalcalcgrade(Convert.ToInt32(courseid[x].getcourseid()), Convert.ToInt32(Request["schoolyearid"]))));
+                }
+                createpdf pdf = new createpdf();
+                //pdf.createpass();
+                ShowPdf(CreatePDF2(courseid));
 
-            //download pdf
-            //get course id for grade
-            //db db = new db();
-            //ViewBag.reportcard = db.getschoolyears(((user)Session["user"]).getusercred().getuserid());
-            return View();
+                //download pdf
+                //get course id for grade
+                //db db = new db();
+                //ViewBag.reportcard = db.getschoolyears(((user)Session["user"]).getusercred().getuserid());
+                return View();
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         private byte[] CreatePDF2(List<reportcarddisplay> courseid)

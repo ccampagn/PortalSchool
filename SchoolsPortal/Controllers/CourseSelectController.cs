@@ -12,9 +12,13 @@ namespace SchoolsPortal.Controllers
         // GET: CourseSelect
         public ActionResult Index()
         {
-            db db = new db();
-            ViewBag.courses = db.getcoursepick(1);
-            return View();
+            if (Session["user"] != null)
+            {
+                db db = new db();
+                ViewBag.courses = db.getcoursepick(1);
+                return View();
+            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }
