@@ -14,7 +14,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;
             string myConnectionString;
-            
+           
             conn = new SqlConnection();
             conn.ConnectionString = myConnectionString;
             conn.Open();
@@ -46,14 +46,14 @@ namespace SchoolsPortal.Models
             db db = new db();
             List<reportcarddisplay> list = new List<reportcarddisplay>();
             SqlConnection conn = db.openconn();
-            String sql = "SELECT course.courseid,coursename,department.department,coursenumber FROM [dbo].[course] join coursestudent on course.courseid =coursestudent.courseid join section on section.sectionid = course.sectionid join department on section.department = department.departmentid join staffinfo on staffinfo.staffinfoid = course.teacherid where schoolyearid =@schoolyearid and studentid=@studentid";
+            String sql = "SELECT course.courseid,coursename,department.department,coursenumber,firstname,lastname FROM [dbo].[course] join coursestudent on course.courseid =coursestudent.courseid join section on section.sectionid = course.sectionid join department on section.department = department.departmentid join userinfo on userinfo.nameid = course.teacherid where schoolyearid =@schoolyearid and studentid=@studentid";
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@schoolyearid", schoolyearid);
             cmd.Parameters.AddWithValue("@studentid", studentid);
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                list.Add(new reportcarddisplay(Convert.ToInt32(rdr["courseid"]), rdr["coursename"].ToString(), rdr["department"].ToString(), rdr["coursenumber"].ToString(),""));
+                list.Add(new reportcarddisplay(Convert.ToInt32(rdr["courseid"]), rdr["coursename"].ToString(), rdr["department"].ToString(), rdr["coursenumber"].ToString(),"",new name( 1,rdr["firstname"].ToString(),null, rdr["lastname"].ToString(),null,null,new DateTime())));
 
             }
             rdr.Close();

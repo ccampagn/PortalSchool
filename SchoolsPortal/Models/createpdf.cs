@@ -17,15 +17,17 @@ namespace SchoolsPortal.Models
         public void createpass()
         {
             // Create a new PDF document
-            PdfSharp.Pdf.PdfDocument document = new PdfSharp.Pdf.PdfDocument();
-            // Create an empty page
-            PdfSharp.Pdf.PdfPage page = document.AddPage();
-            // Save the document...
-            string directory = "C:\\Users\\" + Environment.UserName + "\\reports";
-            Directory.CreateDirectory(directory);
-            string filename = directory +"\\test.pdf";
-            document.Save(filename);
-            Process.Start(filename);
+            /* PdfSharp.Pdf.PdfDocument document = new PdfSharp.Pdf.PdfDocument();
+             // Create an empty page
+             PdfSharp.Pdf.PdfPage page = document.AddPage();            
+             // Save the document...
+             string directory = "C:\\Users\\" + Environment.UserName + "\\reports";
+             Directory.CreateDirectory(directory);
+             string filename = directory +"\\test.pdf";
+             document.Save(filename);
+             Process.Start(filename);*/
+
+           
 
 
         }
