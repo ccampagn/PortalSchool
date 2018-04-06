@@ -60,7 +60,8 @@ namespace SchoolsPortal.Controllers
             {
                 Session["user"] = db.getuser(usercred.getusername());
                 ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
-                ViewBag.schoolyear = db.getschoolyear(0);               
+                ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());
+                ViewBag.schoolyear = db.getschoolyear(0);                            
                 return View(geturl(0,0));               
             }
             else

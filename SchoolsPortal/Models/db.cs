@@ -61,7 +61,106 @@ namespace SchoolsPortal.Models
             return list;
         }
 
+        public ArrayList getschoolday(int userid)
+        {           
+            db db = new db();
+            ArrayList list = new ArrayList();
+            SqlConnection conn = db.openconn();
+            String sql = "SELECT COUNT(*) as closing FROM [dbo].[schoolclosing] join school on school.districtid = schoolclosing.districtid join studentinfo on studentinfo.school = school.schoolid where studentid=@userid and date=@date";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userid", userid);
+            cmd.Parameters.AddWithValue("@date",DateTime.Now.Date);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                if (Convert.ToInt32(rdr["closing"]) == 0)
+                {
+                    int typeofday = db.gettypeofday(userid);
+                    DateTime startofschoolyear = getstartofschoolyear(userid);
+                    double daytype = ((DateTime.Now.Date - startofschoolyear).TotalDays- getnumberofdayoff(startofschoolyear, DateTime.Now)) % typeofday;
+                    Char c = (Char)((65) + (daytype));
+                    //get course in arraylist
+                    list = db.getcoursetoday(userid,c);
+                }
 
+
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return list;
+        }
+        public ArrayList getcoursetoday(int userid, char dayalt)
+        {
+            db db = new db();
+            ArrayList course = new ArrayList();
+            SqlConnection conn = db.openconn();
+            string sql = "SELECT course.courseid,department.department,section.coursenumber,course.sectionnumber,section.coursename,section.description,userinfo.firstname,userinfo.lastname,classroom.classroomname,coursetime.period,coursetime.dayalt FROM [dbo].[coursetime] join coursestudent on coursetime.courseid = coursestudent.courseid join course on course.courseid = coursetime.courseid join section on course.sectionid = section.sectionid join department on section.department = department.departmentid join schoolyear on course.schoolyearid = schoolyear.schoolyearid join userinfo on userinfo.nameid = course.teacherid join classroom on classroom.classroomid=course.classroomid  where dayalt=@dayalt and studentid = @userid and startyear<getdate() and endyear>getdate() order by period";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userid", userid);
+            cmd.Parameters.AddWithValue("@dayalt", dayalt);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), new name(1, rdr["firstname"].ToString(), null, rdr["lastname"].ToString(), null, null, new DateTime()), rdr["classroomname"].ToString(), rdr["period"].ToString() + rdr["dayalt"].ToString(), 0));
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return course;
+        }
+        public int getnumberofdayoff(DateTime start,DateTime cur)
+        {
+            db db = new db();
+            SqlConnection conn = db.openconn();
+            int numofclos = 0;
+            String sql = "SELECT COUNT(*) as numofclos FROM [dbo].[schoolclosing] join school on school.districtid = schoolclosing.districtid join studentinfo on studentinfo.school = school.schoolid where studentid=1 and date>@startdate and date<@enddate";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@startdate",start);
+            cmd.Parameters.AddWithValue("@enddate", cur);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                numofclos = Convert.ToInt32(rdr["numofclos"]);
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return numofclos;
+        }
+
+        public int gettypeofday(int userid)
+        {
+            db db = new db();
+            SqlConnection conn = db.openconn();
+            int dayalt = 0;
+            String sql = "SELECT dayalt FROM [dbo].[school] join studentinfo on studentinfo.school = school.schoolid where studentid =@userid";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userid", userid);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                dayalt = Convert.ToInt32(rdr["dayalt"]);
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return dayalt;
+        }
+
+        public DateTime getstartofschoolyear(int userid)
+        {
+            db db = new db();
+            SqlConnection conn = db.openconn();
+            DateTime startofseasonyear = new DateTime();
+            String sql = "SELECT startyear from schoolyear join school on school.districtid = schoolyear.districtid join studentinfo on school.schoolid = studentinfo.studentid where studentid =1 and startyear<getdate() and endyear>getdate()";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userid", userid);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                startofseasonyear = Convert.ToDateTime(rdr["startyear"]);
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return startofseasonyear;
+        }
 
         public ArrayList getcoursepick(int districtid)
         {
@@ -366,7 +465,7 @@ namespace SchoolsPortal.Models
         public testassignment gettestasignment(int testsid)
         {
             db db = new db();
-            string assignmentname = "";
+            
             testassignment testassignment = null;
             SqlConnection conn = db.openconn();
             String sql = "select title from assignment join tests on assignment.assignmentid = tests.assignmentid where tests.testsid =@testsid";

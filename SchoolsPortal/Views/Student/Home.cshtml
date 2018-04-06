@@ -113,18 +113,18 @@
                     </tr>
                     @foreach (dynamic p in (ViewBag.events))
             {
-                        <tr>
-                            <td>@p.geteventdate().ToShortDateString()</td>
-                            <td><a href="/events?eventid=@p.geteventid()&userid=@ViewBag.userid">@p.geteventname()</a></td>
-                            
-                        </tr>
+                <tr>
+                    <td>@p.geteventdate().ToShortDateString()</td>
+                    <td><a href="/events?eventid=@p.geteventid()&userid=@ViewBag.userid">@p.geteventname()</a></td>
+
+                </tr>
 
 
 
-                    }
+    }
 
 
-                    
+
                 </table>
             </div>
             <div id="newslist">
@@ -138,13 +138,13 @@
                         <th>Author</th>
                     </tr>
                     @foreach (dynamic p in (ViewBag.newstories))
-    {
-                    <tr>
-                        <td>@p.getposttime().ToShortDateString()</td>
-                        <td><a href="/newsstories?newstoriesid=@p.getnewstoriesid()">@p.gettitle()</a></td>
-                        <td>@p.getauthor().getfirstname() @p.getauthor().getlastname()</td>
-                    </tr>
-}
+            {
+                <tr>
+                    <td>@p.getposttime().ToShortDateString()</td>
+                    <td><a href="/newsstories?newstoriesid=@p.getnewstoriesid()">@p.gettitle()</a></td>
+                    <td>@p.getauthor().getfirstname() @p.getauthor().getlastname()</td>
+                </tr>
+    }
                 </table>
             </div>
             <div id="messages">
@@ -158,16 +158,46 @@
                         <th>Last Message</th>
                     </tr>
                     @foreach (dynamic p in (ViewBag.message))
-                    {
-                        <tr>
-                            <td>@p.getsenddate().ToShortDateString()</td>
-                            <td><a href="/message?messageid=@p.getmessageid()">@p.getmessagetitle()</a></td>
-                            <td>@p.getmessagetext()</td>
-                        </tr>
-                    }
+            {
+                <tr>
+                    <td>@p.getsenddate().ToShortDateString()</td>
+                    <td><a href="/message?messageid=@p.getmessageid()">@p.getmessagetitle()</a></td>
+                    <td>@p.getmessagetext()</td>
+                </tr>
+    }
                 </table>
             </div>
+            <div id="coureslist">
+                @if (ViewBag.schoolday.Count !=0) {
+                <table id="tables">
+                    <tr>
+                        <th colspan="9">Courses Today</th>
+                    </tr>
+                    <tr>
+                        <th>Department</th>
+                        <th>Course Number</th>
+                        <th>Section Number</th>
+                        <th>Course Name</th>
+                        <th>Teacher Name</th>
+                        <th>Classroom</th>
+                        <th>Period</th>
+                    </tr>
+                    @foreach (dynamic p in (ViewBag.schoolday))
+                    {
+                <tr>
+                    <td>@p.getdepartment()</td>
+                    <td>@p.getcoursecode()</td>
+                    <td>@p.getsectioncode()</td>
+                    <td><a href="/courses?coursesid=@p.getcourseid()&userid=@ViewBag.userid">@p.getcoursename()</a></td>
+                    <td>@p.getteacher().getfirstname() @p.getteacher().getlastname()</td>
+                    <td>@p.getclassroom()</td>
+                    <td>@p.getperiod()</td>
+                </tr>
+                    }
+                </table>
+                }
             </div>
+        </div>
         </div>
         </div>
     </div>
