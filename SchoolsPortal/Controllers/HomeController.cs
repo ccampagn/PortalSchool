@@ -37,6 +37,7 @@ namespace SchoolsPortal.Controllers
             {
                 db db = new db();
                 ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
+                ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());
                 ViewBag.schoolyear = db.getschoolyear(parkname);
                 return View(geturl(1, parkname));
             }

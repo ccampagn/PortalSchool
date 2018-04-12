@@ -77,10 +77,13 @@ namespace SchoolsPortal.Models
                 {
                     int typeofday = db.gettypeofday(userid);
                     DateTime startofschoolyear = getstartofschoolyear(userid);
-                    double daytype = ((DateTime.Now.Date - startofschoolyear).TotalDays- getnumberofdayoff(startofschoolyear, DateTime.Now)) % typeofday;
-                    Char c = (Char)((65) + (daytype));
-                    //get course in arraylist
-                    list = db.getcoursetoday(userid,c);
+                    if (startofschoolyear.Year != 1)
+                    {
+                        double daytype = ((DateTime.Now.Date - startofschoolyear).TotalDays - getnumberofdayoff(startofschoolyear, DateTime.Now)) % typeofday;
+                        Char c = (Char)((65) + (daytype));
+                        //get course in arraylist
+                        list = db.getcoursetoday(userid, c);
+                    }
                 }
 
 
@@ -144,7 +147,7 @@ namespace SchoolsPortal.Models
             return dayalt;
         }
 
-        public DateTime getstartofschoolyear(int userid)
+        public DateTime getstartofschoolyear(int userid)//testhere
         {
             db db = new db();
             SqlConnection conn = db.openconn();

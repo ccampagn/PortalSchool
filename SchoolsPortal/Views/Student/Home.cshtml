@@ -45,62 +45,93 @@
         </div>
 
         <div id="homepanel">
-        <div id="courses">
-            <div id="coureslist">
-                <table id="tables">
-                    <tr>
-                        <th colspan="9">Courses</th>
-                    </tr>
-                    <tr>
-                        <th>Department</th>
-                        <th>Course Number</th>
-                        <th>Section Number</th>
-                        <th>Course Name</th>
-                        <th>Teacher Name</th>
-                        <th>Classroom</th>
-                        <th>Period</th>
-                        <th>Grade</th>
-                    </tr>
-                    @foreach (dynamic p in (ViewBag.courses))
-            {
+            <div id="courses">
+                <div id="coureslist">
+                    @if (ViewBag.schoolday.Count != 0)
+        {
+            <table id="tables">
+                <tr>
+                    <th colspan="9">Courses Today</th>
+                </tr>
+                <tr>
+                    <th>Department</th>
+                    <th>Course Number</th>
+                    <th>Section Number</th>
+                    <th>Course Name</th>
+                    <th>Teacher Name</th>
+                    <th>Classroom</th>
+                    <th>Period</th>
+                </tr>
+                @foreach (dynamic p in (ViewBag.schoolday))
+    {
+            <tr>
+                <td>@p.getdepartment()</td>
+                <td>@p.getcoursecode()</td>
+                <td>@p.getsectioncode()</td>
+                <td><a href="/courses?coursesid=@p.getcourseid()&userid=@ViewBag.userid">@p.getcoursename()</a></td>
+                <td>@p.getteacher().getfirstname() @p.getteacher().getlastname()</td>
+                <td>@p.getclassroom()</td>
+                <td>@p.getperiod()</td>
+            </tr>
+}
+            </table>
+}
+                </div>
+                <div id="coureslist">
+                    <table id="tables">
                         <tr>
-                            <td>@p.getdepartment()</td>
-                            <td>@p.getcoursecode()</td>
-                            <td>@p.getsectioncode()</td>
-                            <td><a href="/courses?coursesid=@p.getcourseid()&userid=@ViewBag.userid">@p.getcoursename()</a></td>
-                            <td>@p.getteacher().getfirstname() @p.getteacher().getlastname()</td>
-                            <td>@p.getclassroom()</td>
-                            <td>@p.getperiod()</td>
-                            <td>@p.getgrade()</td>
+                            <th colspan="9">Courses</th>
                         </tr>
-                    }
-                </table>
-            </div>
-            <div id="sports">
-                <table id="tables">
-                    <tr>
-                        <th colspan="9">Sports</th>
-                    </tr>
-                    <tr>
-                        <th>Season</th>
-                        <th>Sport</th>
-                        <th>Level</th>
-                        <th>Sex</th>
-                        <th>Coach</th>
-                    </tr>
-                    @foreach (dynamic p in (ViewBag.sport))
-            {
                         <tr>
-                            <td>@p.getseasonname()</td>
-                            <td><a href="/sport?sportid=@p.getsportid()&userid=@ViewBag.userid">@p.getsportname()</a></td>                            
-                            <td>@p.getlevelname()</td>
-                            <td>@p.getsex()</td>
-                            <td>@p.getcoach().getfirstname() @p.getcoach().getlastname() </td>                                                     
+                            <th>Department</th>
+                            <th>Course Number</th>
+                            <th>Section Number</th>
+                            <th>Course Name</th>
+                            <th>Teacher Name</th>
+                            <th>Classroom</th>
+                            <th>Period</th>
+                            <th>Grade</th>
                         </tr>
-                    }
-                </table>
+                        @foreach (dynamic p in (ViewBag.courses))
+            {
+                <tr>
+                    <td>@p.getdepartment()</td>
+                    <td>@p.getcoursecode()</td>
+                    <td>@p.getsectioncode()</td>
+                    <td><a href="/courses?coursesid=@p.getcourseid()&userid=@ViewBag.userid">@p.getcoursename()</a></td>
+                    <td>@p.getteacher().getfirstname() @p.getteacher().getlastname()</td>
+                    <td>@p.getclassroom()</td>
+                    <td>@p.getperiod()</td>
+                    <td>@p.getgrade()</td>
+                </tr>
+}
+                    </table>
+                </div>
+                <div id="sports">
+                    <table id="tables">
+                        <tr>
+                            <th colspan="9">Sports</th>
+                        </tr>
+                        <tr>
+                            <th>Season</th>
+                            <th>Sport</th>
+                            <th>Level</th>
+                            <th>Sex</th>
+                            <th>Coach</th>
+                        </tr>
+                        @foreach (dynamic p in (ViewBag.sport))
+            {
+                <tr>
+                    <td>@p.getseasonname()</td>
+                    <td><a href="/sport?sportid=@p.getsportid()&userid=@ViewBag.userid">@p.getsportname()</a></td>
+                    <td>@p.getlevelname()</td>
+                    <td>@p.getsex()</td>
+                    <td>@p.getcoach().getfirstname() @p.getcoach().getlastname() </td>
+                </tr>
+}
+                    </table>
+                </div>
             </div>
-        </div>
         <div id="newstories">
             <div id="events">
                 <table id="tables">
@@ -167,36 +198,7 @@
     }
                 </table>
             </div>
-            <div id="coureslist">
-                @if (ViewBag.schoolday.Count !=0) {
-                <table id="tables">
-                    <tr>
-                        <th colspan="9">Courses Today</th>
-                    </tr>
-                    <tr>
-                        <th>Department</th>
-                        <th>Course Number</th>
-                        <th>Section Number</th>
-                        <th>Course Name</th>
-                        <th>Teacher Name</th>
-                        <th>Classroom</th>
-                        <th>Period</th>
-                    </tr>
-                    @foreach (dynamic p in (ViewBag.schoolday))
-                    {
-                <tr>
-                    <td>@p.getdepartment()</td>
-                    <td>@p.getcoursecode()</td>
-                    <td>@p.getsectioncode()</td>
-                    <td><a href="/courses?coursesid=@p.getcourseid()&userid=@ViewBag.userid">@p.getcoursename()</a></td>
-                    <td>@p.getteacher().getfirstname() @p.getteacher().getlastname()</td>
-                    <td>@p.getclassroom()</td>
-                    <td>@p.getperiod()</td>
-                </tr>
-                    }
-                </table>
-                }
-            </div>
+            
         </div>
         </div>
         </div>
