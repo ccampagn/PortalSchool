@@ -13,13 +13,15 @@ namespace SchoolsPortal.Models
         private ArrayList answers;
         private int correctanswer;
         private decimal points;
-        public question(int questionid,string questiontext,ArrayList answers,int correctanswer,decimal points)
+        private int type;
+        public question(int questionid,string questiontext,ArrayList answers,int correctanswer,decimal points, int type)
         {
             this.questionid = questionid;
             this.questiontext = questiontext;
             this.answers = answers;
             this.correctanswer = correctanswer;
             this.points = points;
+            this.type = type;
         }
         public int getquestionid()
         {
@@ -40,6 +42,10 @@ namespace SchoolsPortal.Models
         public decimal getpoints()
         {
             return points;
+        }
+        public int gettype()
+        {
+            return type;
         }
     }
 }

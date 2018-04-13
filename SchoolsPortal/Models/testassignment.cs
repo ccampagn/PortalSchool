@@ -11,12 +11,14 @@ namespace SchoolsPortal.Models
         int testassignmentid;
         string assignmentname;
         ArrayList questions;
+        int testlimit;
 
-        public testassignment(int testassignmentid,string assignmentname,ArrayList questions)
+        public testassignment(int testassignmentid,string assignmentname,ArrayList questions,int testlimit)
         {
             this.testassignmentid = testassignmentid;
             this.assignmentname = assignmentname;
             this.questions = questions;
+            this.testlimit = testlimit;
         }
 
         public int gettestassignmentid()
@@ -32,6 +34,11 @@ namespace SchoolsPortal.Models
         public ArrayList getquestions()
         {
             return questions;
+        }
+
+        public int gettestlimit()
+        {
+            return testlimit;
         }
     }
 }

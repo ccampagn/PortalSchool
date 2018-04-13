@@ -4,23 +4,61 @@
     <meta charset="utf-8" />
     <title></title>
     <link rel="stylesheet" href="~/styles.css">
+    
+
 </head>
 <body>
+    <script>
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10)
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    document.test.submit();
+                   // timer = duration;
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            var fiveMinutes = 60 * (@ViewBag.testassignment.gettestlimit()),
+                display = document.querySelector('#time');
+            startTimer(fiveMinutes, display);
+        };
+    </script>
+        <div>Registration closes in <span id="time">05:00</span> minutes!</div>
     <div id="testsassignment">
         <div id="testsheader">
             @ViewBag.testassignment.getassignmentname()
         </div>
-        <form action="/Courses/Result" method="post">
+        <form action="/Courses/Result" name="test" method="post">
             @foreach (dynamic p in (ViewBag.testassignment.getquestions()))
             {
                 <div id="question">
                     <div id="questionheader">
                         @p.getquestiontext()
                     </div>
-                    @foreach (dynamic s in (p.getanswers()))
+                    @if (p.gettype() == 1)
+                    {
+                        foreach (dynamic s in (p.getanswers()))
+                        {
+                            <div id="answers">
+                                <input type="radio" id="test" name="@p.getquestionid()" value="@s.getanswersid()"> @s.getanswerstext()
+                            </div>
+                        }
+                    }
+                    else
                     {
                         <div id="answers">
-                            <input type="radio" id="test" name="@p.getquestionid()" value="@s.getanswersid()"> @s.getanswerstext()
+                            <input type="text" id="test" name="@p.getquestionid()">
+                            <br />
                         </div>
                     }
 

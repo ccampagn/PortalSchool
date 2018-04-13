@@ -61,6 +61,19 @@ namespace SchoolsPortal.Models
             return list;
         }
 
+        public void insertteststatus(int testid, int userid,int status)
+        {
+            db db = new db();
+            SqlConnection conn = db.openconn();
+            string sql = "INSERT INTO teststatus (testid,userid,status) VALUES (@testid,@userid,@status)";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@testid", testid);
+            cmd.Parameters.AddWithValue("@userid", userid);
+            cmd.Parameters.AddWithValue("@status", status);           
+            cmd.ExecuteNonQuery();
+            db.closeconn(conn);
+        }
+
         public ArrayList getschoolday(int userid)
         {           
             db db = new db();
@@ -458,11 +471,28 @@ namespace SchoolsPortal.Models
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                assignmnet.Add(new assignment(Convert.ToInt32(rdr["assignmentid"]), rdr["title"].ToString(), rdr["periodname"].ToString(), Convert.ToDateTime(rdr["postdate"]), Convert.ToDateTime(rdr["duedate"]), Convert.ToInt32(rdr["points"]), Convert.ToInt32(rdr["scores"]), rdr["categoryname"].ToString(), Convert.ToInt32(rdr["testsid"])));
+                assignmnet.Add(new assignment(Convert.ToInt32(rdr["assignmentid"]), rdr["title"].ToString(), rdr["periodname"].ToString(), Convert.ToDateTime(rdr["postdate"]), Convert.ToDateTime(rdr["duedate"]), Convert.ToInt32(rdr["points"]), Convert.ToInt32(rdr["scores"]), rdr["categoryname"].ToString(), Convert.ToInt32(rdr["testsid"]),db.testvalid(Convert.ToInt32(rdr["testsid"]))));
             }
             rdr.Close();
             db.closeconn(conn);
             return assignmnet;
+        }
+        public int testvalid(int testid)
+        {
+            db db = new db();
+            int valid = 0;
+            SqlConnection conn = db.openconn();
+            String sql = "select * from teststatus where testid = @testid";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@testid", testid);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                valid = 1;
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return valid;
         }
 
         public testassignment gettestasignment(int testsid)
@@ -471,13 +501,13 @@ namespace SchoolsPortal.Models
             
             testassignment testassignment = null;
             SqlConnection conn = db.openconn();
-            String sql = "select title from assignment join tests on assignment.assignmentid = tests.assignmentid where tests.testsid =@testsid";
+            String sql = "select title,testlimit from assignment join tests on assignment.assignmentid = tests.assignmentid where tests.testsid =@testsid";
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@testsid", testsid);
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                testassignment = new testassignment(testsid, rdr["title"].ToString(), db.getquestion(testsid));
+                testassignment = new testassignment(testsid, rdr["title"].ToString(), db.getquestion(testsid),Convert.ToInt32(rdr["testlimit"]));
             }
             rdr.Close();
             db.closeconn(conn);
@@ -489,13 +519,13 @@ namespace SchoolsPortal.Models
             db db = new db();
             ArrayList questions = new ArrayList();
             SqlConnection conn = db.openconn();
-            String sql = "SELECT questionid,questiontext,answersid,points FROM [dbo].[question] where testsid = @testsid order by seqid";
+            String sql = "SELECT questionid,questiontext,answersid,points,type FROM [dbo].[question] where testsid = @testsid order by seqid";
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@testsid", testsid);
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                questions.Add(new question(Convert.ToInt32(rdr["questionid"]), rdr["questiontext"].ToString(), db.getanswers(Convert.ToInt32(rdr["questionid"])), Convert.ToInt32(rdr["answersid"]), Convert.ToDecimal(rdr["points"])));
+                questions.Add(new question(Convert.ToInt32(rdr["questionid"]), rdr["questiontext"].ToString(), db.getanswers(Convert.ToInt32(rdr["questionid"])), Convert.ToInt32(rdr["answersid"]), Convert.ToDecimal(rdr["points"]), Convert.ToInt32(rdr["type"])));
             }
             rdr.Close();
             db.closeconn(conn);

@@ -13,8 +13,9 @@ namespace SchoolsPortal.Models
         private decimal points;
         private string category;
         private int testsid;
+        private int teststatus;
 
-        public assignment(int assignmentid, string title, string gradingperiod, DateTime postdate, DateTime duedate, decimal scores, decimal points, string category,int testsid)
+        public assignment(int assignmentid, string title, string gradingperiod, DateTime postdate, DateTime duedate, decimal scores, decimal points, string category,int testsid,int teststatus)
         {
             this.assignmentid = assignmentid;
             this.title = title;
@@ -25,6 +26,7 @@ namespace SchoolsPortal.Models
             this.points = points;
             this.category = category;
             this.testsid = testsid;
+            this.teststatus = teststatus;
         }
 
         public int getassignment()
@@ -62,6 +64,10 @@ namespace SchoolsPortal.Models
         public int gettestsid()
         {
             return testsid;
+        }
+        public int getteststatus()
+        {
+            return teststatus;
         }
     }
 }

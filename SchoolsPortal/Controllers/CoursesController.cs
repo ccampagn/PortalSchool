@@ -44,6 +44,7 @@ namespace SchoolsPortal.Controllers
                 int id = Convert.ToInt32(Request["testsid"]);
                 db db = new db();
                 Session["testassignment"] = db.gettestasignment(id);
+                db.insertteststatus(id, ((user)Session["user"]).getusercred().getuserid(),0);
                 ViewBag.testassignment = Session["testassignment"];
                 return View();
             }

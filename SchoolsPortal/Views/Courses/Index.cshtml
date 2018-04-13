@@ -68,7 +68,7 @@
                             <td>@p.getcategory()</td>
                             @if (p.getpoints() == -1)
                             {
-                                if (p.gettestsid() != 0)
+                                if (p.gettestsid() != 0 && p.getteststatus()==0)
                                 {
                                 <td>
                                     <form action="/Courses/Test" method="post">
