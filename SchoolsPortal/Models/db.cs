@@ -14,7 +14,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;
             string myConnectionString;
-            
+           
             conn = new SqlConnection();
             conn.ConnectionString = myConnectionString;
             conn.Open();
@@ -39,6 +39,21 @@ namespace SchoolsPortal.Models
             rdr.Close();
             db.closeconn(conn);
             return list;
+        }
+
+        public void inserttestanswer(int testid,int userid,int questionid,int answerid,string text)
+        {
+            db db = new db();
+            SqlConnection conn = db.openconn();
+            string sql = "INSERT INTO answerstest (testid,userid,questionid,answerid,answertext) VALUES (@testid,@userid,@questionid,@answerid,@answertext)";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@testid", testid);
+            cmd.Parameters.AddWithValue("@userid", userid);
+            cmd.Parameters.AddWithValue("@questionid", questionid);
+            cmd.Parameters.AddWithValue("@answerid", answerid);
+            cmd.Parameters.AddWithValue("@answertext", text);
+            cmd.ExecuteNonQuery();
+            db.closeconn(conn);
         }
 
         public List<reportcarddisplay> getcourseid(int schoolyearid, int studentid)

@@ -18,17 +18,36 @@ namespace SchoolsPortal.Controllers
                 db db = new db();
                 decimal score = 0;
                 decimal totalpoints = 0;
+                bool uploadgrade = true;
                 foreach (dynamic s in (((testassignment)Session["testassignment"]).getquestions()))
                 {
-                    totalpoints = s.getpoints() + totalpoints;
-                    if (s.getcorrectanswer() == Convert.ToInt32(Request[s.getquestionid().ToString()]))
+                    if (s.gettype() == 1)
                     {
-                        score = s.getpoints() + score;
-
+                        if (Request[s.getquestionid().ToString()] == null)
+                        {
+                            db.inserttestanswer(((testassignment)Session["testassignment"]).gettestassignmentid(), ((user)Session["user"]).getusercred().getuserid(), s.getquestionid(),-1, "");
+                        }
+                        else
+                        {
+                            db.inserttestanswer(((testassignment)Session["testassignment"]).gettestassignmentid(), ((user)Session["user"]).getusercred().getuserid(), s.getquestionid(), Convert.ToInt32(Request[s.getquestionid().ToString()]), "");
+                        }                        
+                        totalpoints = s.getpoints() + totalpoints;
+                        if (s.getcorrectanswer() == Convert.ToInt32(Request[s.getquestionid().ToString()]))
+                        {
+                            score = s.getpoints() + score;
+                        }
+                    }
+                    else
+                    {
+                        uploadgrade = false;
+                        db.inserttestanswer(((testassignment)Session["testassignment"]).gettestassignmentid(), ((user)Session["user"]).getusercred().getuserid(), s.getquestionid(), 0, Request[s.getquestionid().ToString()]);
                     }
                 }
                 ViewBag.score = score / totalpoints;
-                db.insertgrade(((user)Session["user"]).getusercred().getuserid(), db.getassignmentid(((testassignment)Session["testassignment"]).gettestassignmentid()), score);
+                if (uploadgrade)
+                {
+                    db.insertgrade(((user)Session["user"]).getusercred().getuserid(), db.getassignmentid(((testassignment)Session["testassignment"]).gettestassignmentid()), score);
+                }
                 return View();
             }
             return RedirectToAction("Index", "Home");
