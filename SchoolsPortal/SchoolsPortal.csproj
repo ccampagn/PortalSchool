@@ -151,8 +151,10 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AttendenceController.cs" />
     <Compile Include="Controllers\CoursesController.cs" />
     <Compile Include="Controllers\CourseSelectController.cs" />
+    <Compile Include="Controllers\DirectoryController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MessageController.cs" />
@@ -173,6 +175,7 @@
     <Compile Include="Models\courseselect.cs" />
     <Compile Include="Models\createpdf.cs" />
     <Compile Include="Models\db.cs" />
+    <Compile Include="Models\directory.cs" />
     <Compile Include="Models\events.cs" />
     <Compile Include="Models\filterclass.cs" />
     <Compile Include="Models\gradedisplay.cs" />
@@ -250,9 +253,11 @@
     <Content Include="Views\Courses\Result.cshtml" />
     <Content Include="Views\Sport\sports.cshtml" />
     <Content Include="Views\ReportCard\Index.cshtml" />
+    <Content Include="Views\Directory\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Attendence\" />
     <Folder Include="Views\Parent\" />
   </ItemGroup>
   <ItemGroup>

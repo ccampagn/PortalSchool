@@ -14,7 +14,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;
             string myConnectionString;
-           
+            
             conn = new SqlConnection();
             conn.ConnectionString = myConnectionString;
             conn.Open();
@@ -155,6 +155,43 @@ namespace SchoolsPortal.Models
             rdr.Close();
             db.closeconn(conn);
             return numofclos;
+        }
+
+        public int getschool(int userid)
+        {
+            db db = new db();
+            SqlConnection conn = db.openconn();
+            int schoolid = 0;
+            String sql = "select school from studentinfo where studentid = @userid";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userid", userid);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                schoolid = Convert.ToInt32(rdr["school"]);
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return schoolid;
+        }
+
+        public ArrayList getdirectory(int userid)
+        {
+            db db = new db();
+            ArrayList list = new ArrayList();
+            SqlConnection conn = db.openconn();
+            int schoolid = db.getschool(userid);
+            String sql = "SELECT nameid,firstname,middlename,lastname,suffix,grade.grade,cardid,sex.sex,dateofbirth FROM [dbo].[userinfo] join studentinfo on userinfo.userid = studentinfo.studentid join grade on studentinfo.grade = grade.gradeid join sex on userinfo.sex = sex.sexid where school=@schoolid";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@schoolid", db.getschool(userid));
+            SqlDataReader rdr = cmd.ExecuteReader();
+           while (rdr.Read())
+            {
+                list.Add(new directory(Convert.ToInt32(rdr["nameid"]), new name(Convert.ToInt32(rdr["nameid"]), rdr["firstname"].ToString(), rdr["middlename"].ToString(), rdr["lastname"].ToString(), rdr["suffix"].ToString(), rdr["sex"].ToString(), Convert.ToDateTime(rdr["dateofbirth"])), rdr["grade"].ToString(), rdr["cardid"].ToString()));
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return list;
         }
 
         public int gettypeofday(int userid)
