@@ -175,19 +175,52 @@ namespace SchoolsPortal.Models
             return schoolid;
         }
 
-        public ArrayList getdirectory(int userid)
+        public ArrayList getallposition(int userid)
+        {
+            db db = new db();
+            ArrayList list = new ArrayList();
+            list.Add(new position(0,"Student"));
+            SqlConnection conn = db.openconn();
+            String sql = "SELECT positionid,position FROM[dbo].[position] where distrinctid = @districtid;";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(userid));
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(new position(Convert.ToInt32(rdr["positionid"]),rdr["position"].ToString()));
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return list;
+        }
+
+        public ArrayList getdirectory(int userid,string position,string grade)
         {
             db db = new db();
             ArrayList list = new ArrayList();
             SqlConnection conn = db.openconn();
             int schoolid = db.getschool(userid);
-            String sql = "SELECT nameid,firstname,middlename,lastname,suffix,grade.grade,cardid,sex.sex,dateofbirth FROM [dbo].[userinfo] join studentinfo on userinfo.userid = studentinfo.studentid join grade on studentinfo.grade = grade.gradeid join sex on userinfo.sex = sex.sexid where school=@schoolid";
+            String sql = "";
+           
+            if(position == "Staff")
+            {
+                sql = "SELECT nameid, firstname, middlename,lastname,suffix,department.department,cardid,sex.sex,dateofbirth,position.position FROM [dbo].[userinfo] join staffinfo on userinfo.userid = staffinfo.staffid  join sex on userinfo.sex = sex.sexid join position on staffinfo.position = position.positionid join department on staffinfo.department =department.departmentid where school=@schoolid";
+            }
+            else if (position =="Student"){
+                sql = "SELECT nameid, firstname, middlename, lastname, suffix, grade.grade as department,cardid,sex.sex,dateofbirth,'Student' as position FROM[dbo].[userinfo] join studentinfo on userinfo.userid = studentinfo.studentid join grade on studentinfo.grade = grade.gradeid join sex on userinfo.sex = sex.sexid where school = @schoolid";
+            }
+            else
+            {
+
+                sql = "SELECT nameid, firstname, middlename,lastname,suffix,department.department,cardid,sex.sex,dateofbirth,position.position FROM [dbo].[userinfo] join staffinfo on userinfo.userid = staffinfo.staffid  join sex on userinfo.sex = sex.sexid join position on staffinfo.position = position.positionid join department on staffinfo.department =department.departmentid where school=@schoolid union SELECT nameid,firstname,middlename,lastname,suffix,grade.grade,cardid,sex.sex,dateofbirth,'Student' FROM[dbo].[userinfo] join studentinfo on userinfo.userid = studentinfo.studentid join grade on studentinfo.grade = grade.gradeid join sex on userinfo.sex = sex.sexid where school = @schoolid";
+            }
+
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@schoolid", db.getschool(userid));
             SqlDataReader rdr = cmd.ExecuteReader();
-           while (rdr.Read())
+            while (rdr.Read())
             {
-                list.Add(new directory(Convert.ToInt32(rdr["nameid"]), new name(Convert.ToInt32(rdr["nameid"]), rdr["firstname"].ToString(), rdr["middlename"].ToString(), rdr["lastname"].ToString(), rdr["suffix"].ToString(), rdr["sex"].ToString(), Convert.ToDateTime(rdr["dateofbirth"])), rdr["grade"].ToString(), rdr["cardid"].ToString()));
+                list.Add(new directory(Convert.ToInt32(rdr["nameid"]), new name(Convert.ToInt32(rdr["nameid"]), rdr["firstname"].ToString(), rdr["middlename"].ToString(), rdr["lastname"].ToString(), rdr["suffix"].ToString(), rdr["sex"].ToString(), Convert.ToDateTime(rdr["dateofbirth"])), rdr["department"].ToString(), rdr["cardid"].ToString(), rdr["position"].ToString()));
             }
             rdr.Close();
             db.closeconn(conn);

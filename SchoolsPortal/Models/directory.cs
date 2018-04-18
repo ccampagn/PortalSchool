@@ -9,15 +9,17 @@ namespace SchoolsPortal.Models
     {
         private int nameid;
         private name name;
-        private string grade;
+        private string gradedept;
         private string cardid;
+        private string position;
 
-        public directory(int nameid,name name,string grade, string cardid)
+        public directory(int nameid,name name,string gradedept, string cardid,string position)
         {
             this.nameid = nameid;
             this.name = name;
-            this.grade = grade;
+            this.gradedept = gradedept;
             this.cardid = cardid;
+            this.position = position;
         }
 
         public int getnameid()
@@ -28,13 +30,17 @@ namespace SchoolsPortal.Models
         {
             return name;
         }
-        public string getgrade()
+        public string getgradedept()
         {
-            return grade;
+            return gradedept;
         }
         public string getcardid()
         {
             return cardid;
+        }
+        public string getposition()
+        {
+            return position;
         }
 
 

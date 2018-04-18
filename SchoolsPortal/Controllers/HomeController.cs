@@ -108,7 +108,7 @@ namespace SchoolsPortal.Controllers
             }
             if (((user)Session["user"]).getuserinfo().getusertype() == 2)
             {
-                
+                ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());
                 ViewBag.newstories = db.getnewstories(ViewBag.filter);
                 ViewBag.courses = db.getcoursestaff(((user)Session["user"]).getusercred().getuserid());
                 return "~/Views/Staff/Home.cshtml";

@@ -176,10 +176,13 @@
     <Compile Include="Models\createpdf.cs" />
     <Compile Include="Models\db.cs" />
     <Compile Include="Models\directory.cs" />
+    <Compile Include="Models\DirectoryFilter.cs" />
+    <Compile Include="Models\dirmodel.cs" />
     <Compile Include="Models\events.cs" />
     <Compile Include="Models\filterclass.cs" />
     <Compile Include="Models\gradedisplay.cs" />
     <Compile Include="Models\messmodel.cs" />
+    <Compile Include="Models\position.cs" />
     <Compile Include="Models\reportcard.cs" />
     <Compile Include="Models\reportcarddisplay.cs" />
     <Compile Include="Models\sportresult.cs" />
@@ -253,7 +256,7 @@
     <Content Include="Views\Courses\Result.cshtml" />
     <Content Include="Views\Sport\sports.cshtml" />
     <Content Include="Views\ReportCard\Index.cshtml" />
-    <Content Include="Views\Directory\Index.cshtml" />
+    <Content Include="Views\Directory\directory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

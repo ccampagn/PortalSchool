@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="~/Scripts/JavaScript.js"></script>
+    <link rel="stylesheet" href="~/styles.css">
+</head>
+<body>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <div id="divEmp">
+        @using (Ajax.BeginForm("DirectoryMaster", "Directory", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "divEmp" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                <hr />
+                Student/Staff:
+                <select name="position">
+                    <option value=""></option>
+                    <option value="Staff">Staff</option>
+                    <option value="Student">Student</option>
+                </select>
+                
+
+                <input type="submit" value="Post" class="btn btn-primary" />
+                <hr />
+            </div>
+        }
+    </div>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <div>
+        <table id="tables">
+            <tr>
+                <th>First Name</th>
+                <th>Middle Name</th>
+                <th>Last Name</th>
+                <th>Suffix</th>
+                <th>Sex</th>
+                <th>Grade/Dept</th>
+                <th>Position</th>
+                <th>Card ID</th>
+            </tr>
+            @foreach (dynamic p in (ViewBag.directory))
+            {
+                <tr>
+                    <td>@p.getname().getfirstname()</td>
+                    <td>@p.getname().getmiddlename()</td>
+                    <td>@p.getname().getlastname()</td>
+                    <td>@p.getname().getsuffix()</td>
+                    <td>@p.getname().getsex()</td>
+                    <td>@p.getgradedept()</td>
+                    <td>@p.getposition()</td>
+                    <td>@p.getcardid()</td>
+                </tr>
+            }
+        </table>
+    </div>
+</body>
+</html>

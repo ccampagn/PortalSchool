@@ -19,31 +19,6 @@
             </div>
         </li>
     </ul>
-    <div id="studenthome">
-        <table id="tables">
-            <tr>
-                <th>Department</th>
-                <th>Course Number</th>
-                <th>Course Name</th>
-            </tr>
-            @foreach (dynamic p in (ViewBag.courses))
-            {
-                <tr>
-                    <td>@p.getdepartment()</td>
-                    <td>@p.getcoursecode()</td>
-                    <td>@p.getcoursename()</td>
-                </tr>
-            }
-        </table>
-
-        <table id="tables" class="floatright">
-            @foreach (dynamic p in (ViewBag.newstories))
-            {
-                <tr>
-                    <td>@p.gettitle()</td>
-                </tr>
-            }
-        </table>
-    </div>
+    
 </body>
 </html>
