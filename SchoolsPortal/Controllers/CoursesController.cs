@@ -71,22 +71,21 @@ namespace SchoolsPortal.Controllers
         }
 
 
-
-        // GET: Course
-        public ActionResult Index(int coursesid,int userid)
+            // GET: Course
+            public ActionResult Index(int coursesid)
         {
             //move to course class soonest
             db db = new db();
-            ViewBag.assignment = db.getallasignment(coursesid, userid);
-            course a = new course();
-            ViewBag.displaygrade = a.calcdisplaygrade(coursesid, userid);
-            ViewBag.finalgrade = a.calcgradedisplay(ViewBag.displaygrade);
-            ViewBag.messageboard = db.getmessageboard(coursesid);
-            if (userid == ((user)Session["user"]).getusercred().getuserid())
-            {
+            int userid = ((user)Session["user"]).getusercred().getuserid();
+            if (db.checkinclass(coursesid, userid)) {
+                ViewBag.assignment = db.getallasignment(coursesid, userid);
+                course a = new course();
+                ViewBag.displaygrade = a.calcdisplaygrade(coursesid, userid);
+                ViewBag.finalgrade = a.calcgradedisplay(ViewBag.displaygrade);
+                ViewBag.messageboard = db.getmessageboard(coursesid);
                 return View();
             }
-            return View("~/Views/Shared/Error.cshtml");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

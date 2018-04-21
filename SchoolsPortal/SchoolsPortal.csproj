@@ -228,6 +228,8 @@
     <Content Include="Models\Scripts\modernizr-2.6.2.js" />
     <Content Include="Models\Scripts\respond.js" />
     <Content Include="Models\Scripts\respond.min.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="styles.css" />
     <Content Include="Scripts\JavaScript.js" />
     <Content Include="styles2.css" />
@@ -242,7 +244,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Student\Index.cshtml" />
     <Content Include="Views\Staff\Index.cshtml" />
     <Content Include="Views\Student\Home.cshtml" />
     <Content Include="Views\Staff\Home.cshtml" />

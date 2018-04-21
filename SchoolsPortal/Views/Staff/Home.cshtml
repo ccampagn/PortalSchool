@@ -19,6 +19,39 @@
             </div>
         </li>
     </ul>
-    
+    <div id="homepanel">
+        <div id="courses">
+            <div id="coureslist">
+                <table id="tables">
+                    <tr>
+                        <th colspan="9">Courses</th>
+                    </tr>
+                    <tr>
+                        <th>Department</th>
+                        <th>Course Number</th>
+                        <th>Section Number</th>
+                        <th>Course Name</th>
+                        <th>Classroom</th>
+                        <th>Period</th>
+                    </tr>
+                    
+                    @foreach (dynamic p in  ViewBag.courses)
+                        {
+                    <tr>
+                        <td>@p.getdepartment()</td>
+                        <td>@p.getcoursecode()</td>
+                        <td>@p.getsectioncode()</td>
+                        <td><a href="/courses?coursesid=@p.getcourseid()&userid=">@p.getcoursename()</a></td>
+                        <td>@p.getclassroom()</td>
+                        <td>@p.getperiod()</td>
+                    </tr>
+            }
+                </table>
+            </div>
+        </div>
+        </div>
+
+
+            
 </body>
 </html>

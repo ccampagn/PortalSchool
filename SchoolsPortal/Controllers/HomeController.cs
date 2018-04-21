@@ -16,31 +16,26 @@ namespace SchoolsPortal.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            db db = new db();
-            string ipaddress = getipaddress();
-            if (ipaddress != "")
-            {
-                db.logview(ipaddress);
-            }
             if (Session["user"] != null)
             {
-                ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
-                return View(geturl(0,0));
+                if (Session["schoolyearid"] == null)
+                {
+                    getdata(0);
+                }
+                else
+                {
+                    getdata((int)Session["schoolyearid"]);
+                }
+                return View("~/Views/Student/Home.cshtml");
             }
             return View();
         }
 
-        [HttpGet]
-        public ActionResult schoolyear(int parkname)
+        [HttpPost]
+        public ActionResult schoolyear()
         {
-            if (Session["user"] != null)
-            {
-                db db = new db();
-                ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
-                ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());
-                ViewBag.schoolyear = db.getschoolyear(parkname);
-                return View(geturl(1, parkname));
-            }
+            db db = new db();
+            Session["schoolyearid"] = Convert.ToInt32(Request["schoolyear"]);
             return RedirectToAction("Index", "Home");
         }
 
@@ -48,72 +43,43 @@ namespace SchoolsPortal.Controllers
         [ActionName("Index")]
         public ActionResult LogIn()
         {
-            bool status = false;          
-            db db = new db();
-            usercred usercred = new usercred(0, Request.Form["username"], Request.Form["password"]);
-            string hash = "";
-            hash = db.gethash(usercred.getusername());
-            if (hash != "")
+            bool status = false;     //default as can't sign in     
+            db db = new db();          //open access to the db
+            string hash = "";//set hash to blank
+            hash = db.gethash(Request.Form["username"]);//get hash basic on username
+            if (hash != "")//check if hash blank
             {
-                    status = PasswordHash.ValidatePassword(usercred.getpassword(), hash);
+                    status = PasswordHash.ValidatePassword(Request.Form["password"], hash);//check if password validate
             }
-            if (status)
+            if (status)//check if allow to signin
             {
-                Session["user"] = db.getuser(usercred.getusername());
-                ViewBag.userid = ((user)Session["user"]).getusercred().getuserid();
-                ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());
-                ViewBag.schoolyear = db.getschoolyear(0);                            
-                return View(geturl(0,0));               
+                Session["user"] = db.getuser(Request.Form["username"]);//set session to the user
+                return RedirectToAction("Index", "Home");              //redirect to home page controlleer       
             }
             else
             {
-                Response.Write(@"<script language='javascript'>alert('Incorrect Username/Password');</script>");               
+                Response.Write(@"<script language='javascript'>alert('Incorrect Username/Password');</script>");  //error message             
             }
-            return View();
+            return View();//return login view
         }
-        private string getipaddress()
+        private void getdata(int schoolyear)  //getdata for view elements of the home page
         {
-            string userip = "";
-            userip = Request.UserHostAddress;
-            return userip;
-        }
-        private string geturl(int type,int year)
-        {
-            db db = new db();
-            if (((user)Session["user"]).getuserinfo().getusertype() == 1)
+            db db = new db();   //access db methods
+            ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());//get course info forb 
+            ViewBag.schoolyear = db.getschoolyear(schoolyear);//get the list of school year
+            ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());//get filter for event and newstories
+            ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());//get all message for the user
+            ViewBag.events = db.getevents(ViewBag.filter);//get all the different 
+            ViewBag.newstories = db.getnewstories(ViewBag.filter);//get all the new stories
+            ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),schoolyear);//get the list of the different stories
+            ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),schoolyear);//get list of courses for current year
+           course a = new course();
+           for (int x = 0; x < ViewBag.courses.Count; x++)
             {
-                ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());
-                ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());
-                ViewBag.events = db.getevents(ViewBag.filter);
-                ViewBag.newstories = db.getnewstories(ViewBag.filter);
-                if (type == 0)
-                {
-                    ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),1);
-                    ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),1);
-                    
-                }
-                else
-                {
-                    ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),year);
-                    ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),year);
-                }
-                course a = new course();
-                for (int x = 0; x < ViewBag.courses.Count; x++)
-                {
-                    decimal finalgrade = a.finalcalcgrade(ViewBag.courses[x].getcourseid(), ViewBag.userid);
-                    (ViewBag.courses[x]).setgrade(Math.Round(finalgrade * 100));
+                decimal finalgrade = a.finalcalcgrade(ViewBag.courses[x].getcourseid(), ((user)Session["user"]).getusercred().getuserid());//calc final grade for spec course
+                (ViewBag.courses[x]).setgrade(Math.Round(finalgrade * 100));//set the final grade
 
-                }
-                return "~/Views/Student/Home.cshtml";
-            }
-            if (((user)Session["user"]).getuserinfo().getusertype() == 2)
-            {
-                ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());
-                ViewBag.newstories = db.getnewstories(ViewBag.filter);
-                ViewBag.courses = db.getcoursestaff(((user)Session["user"]).getusercred().getuserid());
-                return "~/Views/Staff/Home.cshtml";
-            }
-            return "";
+           }
         }
     }
 }

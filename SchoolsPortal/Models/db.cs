@@ -76,6 +76,25 @@ namespace SchoolsPortal.Models
             return list;
         }
 
+        public bool checkinclass(int coursesid, int userid)
+        {
+            db db = new db();
+            bool incheck = false;
+            SqlConnection conn = db.openconn();
+            String sql = "SELECT * FROM [dbo].[coursestudent] where studentid=@userid and courseid =@courseid";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userid", userid);
+            cmd.Parameters.AddWithValue("@courseid", coursesid);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                incheck = true;
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return incheck;
+        }
+
         public void insertteststatus(int testid, int userid,int status)
         {
             db db = new db();
@@ -739,7 +758,25 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return course;
         }
-        
+        public ArrayList getcourseteacher(int userid, int schoolyear)
+        {
+            db db = new db();
+            ArrayList course = new ArrayList();
+            SqlConnection conn = db.openconn();
+            string sql = "SELECT course.courseid,coursenumber,course.sectionnumber,coursename,description,department.department,credit,classroom.classroomname,period,dayalt FROM [dbo].[course] join coursetime on course.courseid = coursetime.courseid join section on course.sectionid = section.sectionid join department on section.department = department.departmentid join classroom on classroom.classroomid =course.classroomid  where teacherid = @userid and schoolyearid=1";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@userid", userid);
+            //cmd.Parameters.AddWithValue("@schoolyear", schoolyear);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), new name(1, null, null, null, null, null, new DateTime()), rdr["classroomname"].ToString(), rdr["period"].ToString() + rdr["dayalt"].ToString(), 0));
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return course;
+        }
+
         public ArrayList getschoolyear(int yearid)
         {
             db db = new db();
