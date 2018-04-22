@@ -16,32 +16,31 @@ namespace SchoolsPortal.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            if (Session["user"] != null)
+            if (Session["user"] != null)//check if valid user
             {
-                if (Session["schoolyearid"] == null)
+                if (Session["schoolyearid"] == null)//check if first time ir if change of schoolyearid
                 {
-                    getdata(0);
+                    getdata(0);//get varies data
                 }
                 else
                 {
-                    getdata((int)Session["schoolyearid"]);
+                    getdata((int)Session["schoolyearid"]);//get data but use schoolyearid
                 }
-                return View("~/Views/Student/Home.cshtml");
+                return View("~/Views/Student/Home.cshtml");//go to student homepage
             }
-            return View();
+            return View();//return to login page 
         }
 
         [HttpPost]
-        public ActionResult schoolyear()
+        public ActionResult schoolyear()//change of schoolyear dropdown action
         {
-            db db = new db();
-            Session["schoolyearid"] = Convert.ToInt32(Request["schoolyear"]);
-            return RedirectToAction("Index", "Home");
+            Session["schoolyearid"] = Convert.ToInt32(Request["schoolyear"]);//get schoolyearid of dropdown box
+            return RedirectToAction("Index", "Home");//redirect to student home page
         }
 
         [HttpPost]
         [ActionName("Index")]
-        public ActionResult LogIn()
+        public ActionResult LogIn()//login action
         {
             bool status = false;     //default as can't sign in     
             db db = new db();          //open access to the db
@@ -65,8 +64,9 @@ namespace SchoolsPortal.Controllers
         private void getdata(int schoolyear)  //getdata for view elements of the home page
         {
             db db = new db();   //access db methods
+            Session["district"] = db.getdistrictid(((user)Session["user"]).getusercred().getuserid());
             ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());//get course info forb 
-            ViewBag.schoolyear = db.getschoolyear(schoolyear);//get the list of school year
+            ViewBag.schoolyear = db.getschoolyear(schoolyear, ((user)Session["user"]).getusercred().getuserid());//get the list of school year
             ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());//get filter for event and newstories
             ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());//get all message for the user
             ViewBag.events = db.getevents(ViewBag.filter);//get all the different 

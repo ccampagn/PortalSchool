@@ -7,16 +7,16 @@ namespace SchoolsPortal.Models
 {
     public class course
     {
-        private int courseid;
-        private string department;
-        private string coursecode;
-        private string sectioncode;
-        private string coursename;
-        private string description;
-        private name teacher;
-        private string classroom;
-        private string period;
-        private decimal grade;
+        private int courseid;       //courseid
+        private string department;  //department
+        private string coursecode;  //course code number
+        private string sectioncode; //section code
+        private string coursename;  //course name
+        private string description; //description
+        private name teacher;       //teacher
+        private string classroom;   //classroom
+        private string period;      //period
+        private decimal grade;      //grade
         public course(int courseid, string department, string coursecode, string sectioncode, string coursename, string description, name teacher, string classroom, string period, decimal grade)
         {
             this.courseid = courseid;
@@ -80,11 +80,11 @@ namespace SchoolsPortal.Models
         {
             this.grade = grade;
         }
-        public List<gradedisplay> calcdisplaygrade(int course, int userid)//test tomorrow afternoon
+        public List<gradedisplay> calcdisplaygrade(int course, int userid)//calc display grade return list as grade
         {
             db db = new db();
-            List<assignment> assign = db.getallasignment(course, userid);//new type function
-            List<gradedisplay> gradedisplay = db.getgradedisplay(course);//new type function
+            List<assignment> assign = db.getallasignment(course, userid);//get list of all the assignment with grade for all 
+            List<gradedisplay> gradedisplay = db.getgradedisplay(course);//get the grade display
             if (db.getcoursegradetype(course) == 1)
             {
                 for (int x = 0; x < gradedisplay.Count; x++)
