@@ -7,28 +7,28 @@ namespace SchoolsPortal.Models
 {
     public class categorygrade
     {
-        private int categorygradeid;
-        private decimal gradepercent;
-        private int categoryid;
+        private int categorygradeid;//categorygrade
+        private decimal gradepercent;//gradepercent
+        private int categoryid;//categoryid
 
-        public categorygrade(int categorygradeid,decimal gradepercent,int categoryid)
+        public categorygrade(int categorygradeid,decimal gradepercent,int categoryid)//construction
         {
             this.categorygradeid = categorygradeid;
             this.gradepercent = gradepercent;
             this.categoryid = categoryid;
         }
 
-        public int getcategorygradeid()
+        public int getcategorygradeid()//get category grade id
         {
             return categorygradeid;
         }
 
-        public decimal getgradepercent()
+        public decimal getgradepercent()//getgradepercent
         {
             return gradepercent;
         }
 
-        public int getcategoryid()
+        public int getcategoryid()//getcategoryid
         {
             return categoryid;
         }

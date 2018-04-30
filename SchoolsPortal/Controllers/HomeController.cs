@@ -43,9 +43,8 @@ namespace SchoolsPortal.Controllers
         public ActionResult LogIn()//login action
         {
             bool status = false;     //default as can't sign in     
-            db db = new db();          //open access to the db
-            string hash = "";//set hash to blank
-            hash = db.gethash(Request.Form["username"]);//get hash basic on username
+            db db = new db();          //open access to the db            
+            string hash = db.gethash(Request.Form["username"]);//get hash basic on username
             if (hash != "")//check if hash blank
             {
                     status = PasswordHash.ValidatePassword(Request.Form["password"], hash);//check if password validate
@@ -64,17 +63,17 @@ namespace SchoolsPortal.Controllers
         private void getdata(int schoolyear)  //getdata for view elements of the home page
         {
             db db = new db();   //access db methods
-            Session["district"] = db.getdistrictid(((user)Session["user"]).getusercred().getuserid());
-            ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());//get course info forb 
+            Session["district"] = db.getdistrictid(((user)Session["user"]).getusercred().getuserid());//get district id
+            ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());//get course info home page 
             ViewBag.schoolyear = db.getschoolyear(schoolyear, ((user)Session["user"]).getusercred().getuserid());//get the list of school year
             ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());//get filter for event and newstories
             ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());//get all message for the user
             ViewBag.events = db.getevents(ViewBag.filter);//get all the different 
             ViewBag.newstories = db.getnewstories(ViewBag.filter);//get all the new stories
-            ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),schoolyear);//get the list of the different stories
+            ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),schoolyear);//get the list of the different sport
             ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),schoolyear);//get list of courses for current year
-           course a = new course();
-           for (int x = 0; x < ViewBag.courses.Count; x++)
+           course a = new course();//new course all to call method for grade
+           for (int x = 0; x < ViewBag.courses.Count; x++)//loop thru all the different course in the list
             {
                 decimal finalgrade = a.finalcalcgrade(ViewBag.courses[x].getcourseid(), ((user)Session["user"]).getusercred().getuserid());//calc final grade for spec course
                 (ViewBag.courses[x]).setgrade(Math.Round(finalgrade * 100));//set the final grade

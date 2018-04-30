@@ -17,7 +17,7 @@ namespace SchoolsPortal.Models
         private string classroom;   //classroom
         private string period;      //period
         private decimal grade;      //grade
-        public course(int courseid, string department, string coursecode, string sectioncode, string coursename, string description, name teacher, string classroom, string period, decimal grade)
+        public course(int courseid, string department, string coursecode, string sectioncode, string coursename, string description, name teacher, string classroom, string period, decimal grade)//course constructor
         {
             this.courseid = courseid;
             this.department = department;
@@ -31,52 +31,52 @@ namespace SchoolsPortal.Models
             this.grade = grade;
         }
 
-        public course()
+        public course()//blank course constructor
         {
         }
 
-        public int getcourseid()
+        public int getcourseid()//get course id
         {
             return courseid;
         }
-        public string getdepartment()
+        public string getdepartment()//get department
         {
             return department;
         }
-        public string getcoursecode()
+        public string getcoursecode()//get course code
         {
             return coursecode;
         }
-        public string getsectioncode()
+        public string getsectioncode()//get section code
         {
             return sectioncode;
         }
-        public string getcoursename()
+        public string getcoursename()//get course name
         {
             return coursename;
         }
-        public string getdescription()
+        public string getdescription()//get description
         {
             return description;
         }
-        public name getteacher()
+        public name getteacher()//get teacher
         {
             return teacher;
         }
-        public string getclassroom()
+        public string getclassroom()//get classroom
         {
             return classroom;
         }
-        public string getperiod()
+        public string getperiod()//get period
         {
             return period;
         }
 
-        public decimal getgrade()
+        public decimal getgrade()//get grade
         {
             return grade;
         }
-        public void setgrade(decimal grade)
+        public void setgrade(decimal grade)//set grade
         {
             this.grade = grade;
         }
@@ -85,66 +85,64 @@ namespace SchoolsPortal.Models
             db db = new db();
             List<assignment> assign = db.getallasignment(course, userid);//get list of all the assignment with grade for all 
             List<gradedisplay> gradedisplay = db.getgradedisplay(course);//get the grade display
-            if (db.getcoursegradetype(course) == 1)
+            if (db.getcoursegradetype(course) == 1)//check if grade type for the course point,category, it is point here
             {
-                for (int x = 0; x < gradedisplay.Count; x++)
+                for (int x = 0; x < gradedisplay.Count; x++)//loop thru gradedisplay
                 {
-                    if (gradedisplay[x].gettype() == 1)
+                    if (gradedisplay[x].gettype() == 1)//differentquarter
                     {
-                        gradedisplay[x].setpercent(db.getpercentgrade(userid, course, gradedisplay[x].getgradedisplayid()));
+                        gradedisplay[x].setpercent(db.getpercentgrade(userid, course, gradedisplay[x].getgradedisplayid()));//set grade for certain quarter
                     }
-                    if (gradedisplay[x].gettype() == 2)
-                    {
-                        gradedisplay[x].setpercent(db.getpercentgradecategory(userid, course, gradedisplay[x].getgradedisplayid()));
+                    if (gradedisplay[x].gettype() == 2)//assignmengt not part of quarter
+                    { 
+                        gradedisplay[x].setpercent(db.getpercentgradecategory(userid, course, gradedisplay[x].getgradedisplayid()));//set grade for certain special assignment that are not part of a quarter
                     }
                 }
-
-
             }
-            else
+            else//it is category here
             {
-                List<categorygrade> category = db.getcategorygrade(course);
-                decimal point = 0;
-                foreach (dynamic p in (gradedisplay))
+                List<categorygrade> category = db.getcategorygrade(course);//get different category and grade percent here
+                decimal point = 0;//default point
+                foreach (dynamic p in (gradedisplay))//list thru on the different grade display
                 {
-                    if (p.gettype() == 1)
+                    if (p.gettype() == 1)//check if for a quarter
                     {
-                        foreach (dynamic s in (category))
+                        foreach (dynamic s in (category))//loop thru the different category
                         {
                             point = point + (s.getgradepercent() * db.getcategoriesgrade(course, userid, p.getgradedisplayid(), s.getcategoryid()));
                         }
-                        p.setpercent(point);
-                        point = 0;
+                        p.setpercent(point);//set percent
+                        point = 0;//reset percent to 0
                     }
-                    if (p.gettype() == 2)
+                    if (p.gettype() == 2)////check if special assignment
                     {
-                        p.setpercent(db.getpercentgradecategory(userid, course, p.getgradedisplayid()));
+                        p.setpercent(db.getpercentgradecategory(userid, course, p.getgradedisplayid()));//set grade for special assignment
                     }
                 }
             }
 
-            return gradedisplay;
+            return gradedisplay;//return list of gradedisplay
         }
-        public decimal calcgradedisplay(List<gradedisplay> gradedisplay)
+        public decimal calcgradedisplay(List<gradedisplay> gradedisplay)//calc the final grade based on quarter and special assignment grade
         {
-            decimal finalgrade = 0;
-            decimal percenttotal = 0;
-            for (int x = 0; x < gradedisplay.Count; x++)
+            decimal finalgrade = 0;//default final grade
+            decimal percenttotal = 0;//default percent total
+            for (int x = 0; x < gradedisplay.Count; x++)//loop thru the different grade display
             {
 
-                if (gradedisplay[x].getpercent() != -1)
+                if (gradedisplay[x].getpercent() != -1)//check to make sure grade with valid
                 {
-                    percenttotal = percenttotal + gradedisplay[x].getperiodpercent() * gradedisplay[x].getpercent();
-                    finalgrade = finalgrade + gradedisplay[x].getperiodpercent();
+                    percenttotal = percenttotal + gradedisplay[x].getperiodpercent() * gradedisplay[x].getpercent();//calc periodpecent time percent
+                    finalgrade = finalgrade + gradedisplay[x].getperiodpercent();//add percentperiod up
                 }
 
             }
 
-            return percenttotal / finalgrade;
+            return percenttotal / finalgrade;//get final grade by div percenttotal by finalgrade
         }
-        public decimal finalcalcgrade(int course, int userid)
+        public decimal finalcalcgrade(int course, int userid)//method calc 
         {
-            return calcgradedisplay(calcdisplaygrade(course, userid));
+            return calcgradedisplay(calcdisplaygrade(course, userid));//calcgradedisplay
         }
     }
 }

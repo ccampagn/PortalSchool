@@ -9,17 +9,15 @@ namespace SchoolsPortal.Controllers
 {
     public class EventsController : Controller
     {
-
-
-        public ActionResult Index(int eventid,int userid)
+        public ActionResult Index(int eventid)
         {
-            if (userid == ((user)Session["user"]).getusercred().getuserid())
+            db db = new db();
+            if (db.checkifevent(eventid,db.getfilterinfo(((user)Session["user"]).getusercred().getuserid())))
             {
-                db db = new db();
                 ViewBag.Event = db.getsingleevents(eventid);
                 return View("~/Views/Events/event.cshtml");
             }
-            return RedirectToAction("Index", "Home");
+           return RedirectToAction("Index", "Home");
         }
     }
 }
