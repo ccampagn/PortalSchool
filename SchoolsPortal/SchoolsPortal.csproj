@@ -251,7 +251,7 @@
     <Content Include="Views\NewsStories\Index.cshtml" />
     <Content Include="Views\Courses\Index.cshtml" />
     <Content Include="Views\CourseSelect\Index.cshtml" />
-    <Content Include="Views\Events\event.cshtml" />
+    <Content Include="Views\Events\Index.cshtml" />
     <Content Include="Views\Message\message.cshtml" />
     <Content Include="Views\Courses\Test.cshtml" />
     <Content Include="Views\Courses\Result.cshtml" />

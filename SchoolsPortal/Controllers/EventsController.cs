@@ -15,7 +15,7 @@ namespace SchoolsPortal.Controllers
             if (db.checkifevent(eventid,db.getfilterinfo(((user)Session["user"]).getusercred().getuserid())))
             {
                 ViewBag.Event = db.getsingleevents(eventid);
-                return View("~/Views/Events/event.cshtml");
+                return View();
             }
            return RedirectToAction("Index", "Home");
         }

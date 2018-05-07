@@ -74,18 +74,16 @@ namespace SchoolsPortal.Controllers
             // GET: Course
             public ActionResult Index(int coursesid)
         {
-            //move to course class soonest
-            db db = new db();
-            int userid = ((user)Session["user"]).getusercred().getuserid();
-            if (db.checkinclass(coursesid, userid)) {
-                ViewBag.assignment = db.getallasignment(coursesid, userid);
-                course a = new course();
-                ViewBag.displaygrade = a.calcdisplaygrade(coursesid, userid);
-                ViewBag.finalgrade = a.calcgradedisplay(ViewBag.displaygrade);
-                ViewBag.messageboard = db.getmessageboard(coursesid);
-                return View();
+            db db = new db();//create db object
+            if (db.checkinclass(coursesid, ((user)Session["user"]).getusercred().getuserid())) {//class to make sure user have access to this page
+                ViewBag.assignment = db.getallasignment(coursesid, ((user)Session["user"]).getusercred().getuserid());//get list of all the different assignment
+                course a = new course();//create course object
+                ViewBag.displaygrade = a.calcdisplaygrade(coursesid, ((user)Session["user"]).getusercred().getuserid());//calc display grade for all the different categories
+                ViewBag.finalgrade = a.calcgradedisplay(ViewBag.displaygrade);//calc the final grade
+                ViewBag.messageboard = db.getmessageboard(coursesid);//get message board based on the courseid
+                return View();//return the course page
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home");//redirect to home page if taking to access course page not part of
         }
     }
 }
