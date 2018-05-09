@@ -15,6 +15,12 @@
     margin-right: 15%;
     text-align: center
 }
+#assignment {
+    width: 45%;
+    float: left;
+    min-width: 600px;
+    margin: 10px 10px 10px 10px;
+}
 #testsheader {
     color: black;
     font-size: 36px;
