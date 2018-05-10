@@ -9,6 +9,12 @@
     min-width: 600px;
     margin: 10px 10px 10px 10px;
 }
+#messageboard {
+    width: 45%;
+    float: left;
+    min-width: 600px;
+    margin: 10px 10px 10px 10px;
+}
 #testsassignment {
     min-width: 600px;
     margin-left: 15%;
@@ -16,8 +22,8 @@
     text-align: center
 }
 #assignment {
-    width: 45%;
     float: left;
+    width: 45%;
     min-width: 600px;
     margin: 10px 10px 10px 10px;
 }

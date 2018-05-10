@@ -7,7 +7,7 @@
     <script src="~/Scripts/JavaScript.js"></script>
 </head>
 <body>
-    <div id="wholestudentpage">
+    <div id="wholehomepage">
         <div id="navbar">
             <ul id="main-menu" class="sm sm-blue">
                 <li><a href="~/Home">Home</a></li>
@@ -23,6 +23,7 @@
             </ul>
         </div>
     <br />
+   <div id="homepage">
     <div id="gradeassignment">
         <table id="tables">
             <tr>
@@ -49,18 +50,19 @@
         </table>
         </div>
         <br />
-        <div id="assignment">
-            <table id="tables">
-                <tr>
-                    <th>Date</th>
-                    <th>Assignment Name</th>
-                    <th>Grading Period</th>
-                    <th>Category</th>
-                    <th>Points</th>
-                    <th>Possible Points</th>
-                    <th>Percentage</th>
-                </tr>
-                @foreach (dynamic p in (ViewBag.assignment))
+        <div id="homepage">
+            <div id="assignment">
+                <table id="tables">
+                    <tr>
+                        <th>Date</th>
+                        <th>Assignment Name</th>
+                        <th>Grading Period</th>
+                        <th>Category</th>
+                        <th>Points</th>
+                        <th>Possible Points</th>
+                        <th>Percentage</th>
+                    </tr>
+                    @foreach (dynamic p in (ViewBag.assignment))
             {
                 <tr>
                     <td>@p.getduedate().ToShortDateString()</td>
@@ -68,52 +70,82 @@
                     <td>@p.getgradingperiod()</td>
                     <td>@p.getcategory()</td>
                     @if (p.getpoints() == -1)
+            {
+                if (p.gettestsid() != 0 && p.getteststatus() == 0)
                 {
-                    if (p.gettestsid() != 0 && p.getteststatus() == 0)
-                    {
-                        <td>
-                            <form action="/Courses/Test" method="post">
-                                <input id="testsid" name="testsid" type="hidden" value="@p.gettestsid()" />
-                                <input value="Take Test" type="submit" />
-                            </form>
-                        </td>
-                }
-                else
-                {
-                    <td>-</td>
-            }
+                    <td>
+                        <form action="/Courses/Test" method="post">
+                            <input id="testsid" name="testsid" type="hidden" value="@p.gettestsid()" />
+                            <input value="Take Test" type="submit" />
+                        </form>
+                    </td>
         }
         else
         {
-            <td>@p.getpoints()</td>
-    }
+            <td>-</td>
+}
+}
+else
+{
+        <td>@p.getpoints()</td>
+}
                     <td>@p.getscores()</td>
                     @if (p.getpoints() == -1)
-                {
-
-                    <td>-</td>
-            }
-            else
             {
-                <td>@(p.getpoints() / p.getscores() * 100)%</td>
-        }
-                </tr>
-        }
-            </table>
-        </div>
-        <div id="messageboard">
-            <table id="tables">
-                <tr>
-                    <th>Message Board</th>
-                </tr>
-                @foreach (dynamic p in (ViewBag.messageboard))
+
+                <td>-</td>
+    }
+    else
     {
-            <tr>
-                <td>@p.getmessage() </td>
-            </tr>
+        <td>@(p.getpoints() / p.getscores() * 100)%</td>
 }
-            </table>
+                </tr>
+    }
+                </table>
             </div>
+            <div id="messageboard">
+                <table id="tables">
+                    <tr>
+                        <th colspan="2">Message Board</th>
+                    </tr>
+                    <tr>
+                        <th>Message</th>
+                        <th>From</th>
+                    </tr>
+                    @foreach (dynamic p in (ViewBag.messageboard))
+    {
+                <tr>
+                    <td>@p.getmessage()</td>
+                    <td>@p.getname().getfirstname() @p.getname().getlastname()</td>
+                </tr>
+}
+                </table>
+                <script src="~/Scripts/jquery-1.10.2.js"></script>
+                <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+                <div id="divEmp">
+
+
+                    @using (Ajax.BeginForm("MessageMaster", "Courses", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "divEmp" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+
+                <hr />
+                Message: @Html.TextBox("text")
+                <input type="submit" value="Post" class="btn btn-primary" />
+                <hr />
+
+
+
+            </div>
+}
+                </div>
+                <script src="~/Scripts/jquery.validate.min.js"></script>
+                <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+            </div>
+        </div>
+        </div>
         </div>
 </body>
 </html>

@@ -76,6 +76,7 @@ namespace SchoolsPortal.Controllers
         {
             db db = new db();//create db object
             if (db.checkinclass(coursesid, ((user)Session["user"]).getusercred().getuserid())) {//class to make sure user have access to this page
+                Session["courseid"] = coursesid;
                 ViewBag.assignment = db.getallasignment(coursesid, ((user)Session["user"]).getusercred().getuserid());//get list of all the different assignment
                 course a = new course();//create course object
                 ViewBag.displaygrade = a.calcdisplaygrade(coursesid, ((user)Session["user"]).getusercred().getuserid());//calc display grade for all the different categories
@@ -84,6 +85,26 @@ namespace SchoolsPortal.Controllers
                 return View();//return the course page
             }
             return RedirectToAction("Index", "Home");//redirect to home page if taking to access course page not part of
+        }
+        [HttpPost]
+        public ActionResult MessageMaster(messmodel obj)
+        {
+            if (Session["user"] != null)
+            {
+                db db = new db();
+                //insert into database
+                int courseid = (int)Session["courseid"];
+                db.insertmessageboard(((user)Session["user"]).getusercred().getuserid(),courseid, obj.text);
+                ViewBag.messageboard = db.getmessageboard(courseid);
+                ViewBag.assignment = db.getallasignment(courseid, ((user)Session["user"]).getusercred().getuserid());//get list of all the different assignment
+                course a = new course();//create course object
+                ViewBag.displaygrade = a.calcdisplaygrade(courseid, ((user)Session["user"]).getusercred().getuserid());//calc display grade for all the different categories
+                ViewBag.finalgrade = a.calcgradedisplay(ViewBag.displaygrade);//calc the final grade
+                ViewBag.messageboard = db.getmessageboard(courseid);//get message board based on the courseid
+                ModelState.Clear();
+                return PartialView("index");
+            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }

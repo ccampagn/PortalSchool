@@ -745,6 +745,19 @@ namespace SchoolsPortal.Models
         }
         #endregion
         #region message
+        public void insertmessageboard(int userid,int courses, string text)
+        {
+            db db = new db();
+            SqlConnection conn = db.openconn();
+            string sql = "INSERT INTO messageboard (message,userid,date,courseid) VALUES (@message,@userid,@date,@courses)";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@message", text);
+            cmd.Parameters.AddWithValue("@userid", userid);
+            cmd.Parameters.AddWithValue("@date", DateTime.Now);
+            cmd.Parameters.AddWithValue("@courses", courses);
+            cmd.ExecuteNonQuery();
+            db.closeconn(conn);
+        }
         public ArrayList getmessagethread(int messagethreadid)
         {
             db db = new db();
