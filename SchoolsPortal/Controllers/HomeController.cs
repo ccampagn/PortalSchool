@@ -8,6 +8,12 @@ using NationalParkServiceSystem.Models;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Policy;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace SchoolsPortal.Controllers
 {
@@ -16,6 +22,8 @@ namespace SchoolsPortal.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            db db = new db();
+            
             if (Session["user"] != null)//check if valid user
             {
                 if (Session["schoolyearid"] == null)//check if first time ir if change of schoolyearid
@@ -42,6 +50,7 @@ namespace SchoolsPortal.Controllers
         [ActionName("Index")]
         public ActionResult LogIn()//login action
         {
+           
             bool status = false;     //default as can't sign in     
             db db = new db();          //open access to the db            
             string hash = db.gethash(Request.Form["username"]);//get hash basic on username

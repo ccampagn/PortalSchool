@@ -15,7 +15,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;//conn variable
             string myConnectionString;//conn string
-            
+           
             conn = new SqlConnection();//create new conn
             conn.ConnectionString = myConnectionString;//setting conn
             conn.Open();//open conn to the db
@@ -56,6 +56,9 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close connection
             return sportlist;
         }
+
+       
+
         public ArrayList getsportresult(int sportlistid)
         {
             db db = new db();
@@ -139,6 +142,7 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return list;
         }
+        
         public List<reportcarddisplay> getcourseid(int schoolyearid, int studentid)
         {
             db db = new db();
