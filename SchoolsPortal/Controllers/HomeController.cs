@@ -14,6 +14,7 @@ using System.Security.Policy;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text;
+using System.Collections;
 
 namespace SchoolsPortal.Controllers
 {
@@ -22,8 +23,7 @@ namespace SchoolsPortal.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            db db = new db();
-            
+            db db = new db();          
             if (Session["user"] != null)//check if valid user
             {
                 if (Session["schoolyearid"] == null)//check if first time ir if change of schoolyearid
@@ -52,7 +52,8 @@ namespace SchoolsPortal.Controllers
         {
            
             bool status = false;     //default as can't sign in     
-            db db = new db();          //open access to the db            
+            db db = new db();          //open access to the db 
+            
             string hash = db.gethash(Request.Form["username"]);//get hash basic on username
             if (hash != "")//check if hash blank
             {
@@ -73,7 +74,23 @@ namespace SchoolsPortal.Controllers
         {
             db db = new db();   //access db methods
             Session["district"] = db.getdistrictid(((user)Session["user"]).getusercred().getuserid());//get district id
-            ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());//get course info home page 
+            ArrayList course = new ArrayList();
+            if (db.checkifschoolisclosed(((user)Session["user"]).getusercred().getuserid()) == false)
+            {
+                //school is not close
+                DateTime startofschoolyear = db.getstartofschoolyear(((user)Session["user"]).getusercred().getuserid());//getfirst day of school
+                if (startofschoolyear.Year != 1)//check if not default
+                {
+                    int numofday = (int)((DateTime.Now.Date - startofschoolyear).TotalDays - db.getnumberofdayoff(startofschoolyear, DateTime.Now));
+                    course = db.getcoursetoday(numofday, ((user)Session["user"]).getusercred().getuserid());
+                }
+            }
+            else
+            {
+                //school is close
+            }
+            ViewBag.schoolday = course;
+            //ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());//get course info home page 
             ViewBag.schoolyear = db.getschoolyear(schoolyear, ((user)Session["user"]).getusercred().getuserid());//get the list of school year
             ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());//get filter for event and newstories
             ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());//get all message for the user
