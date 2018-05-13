@@ -23,6 +23,7 @@ namespace SchoolsPortal.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            ViewBag.test=DateTime.Now.DayOfWeek;
             db db = new db();          
             if (Session["user"] != null)//check if valid user
             {
@@ -82,15 +83,10 @@ namespace SchoolsPortal.Controllers
                 if (startofschoolyear.Year != 1)//check if not default
                 {
                     int numofday = (int)((DateTime.Now.Date - startofschoolyear).TotalDays - db.getnumberofdayoff(startofschoolyear, DateTime.Now));
-                    course = db.getcoursetoday(numofday, ((user)Session["user"]).getusercred().getuserid());
+                    course = db.getcoursetoday(numofday, ((user)Session["user"]).getusercred().getuserid(), (int)DateTime.Now.DayOfWeek,DateTime.Now);
                 }
             }
-            else
-            {
-                //school is close
-            }
             ViewBag.schoolday = course;
-            //ViewBag.schoolday = db.getschoolday(((user)Session["user"]).getusercred().getuserid());//get course info home page 
             ViewBag.schoolyear = db.getschoolyear(schoolyear, ((user)Session["user"]).getusercred().getuserid());//get the list of school year
             ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());//get filter for event and newstories
             ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());//get all message for the user

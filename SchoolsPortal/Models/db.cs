@@ -198,13 +198,15 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close conn
             return incheck;//return if in course of not
         }
-        public ArrayList getcoursetoday(int schooldaynum,int userid)
+        public ArrayList getcoursetoday(int schooldaynum,int userid,int week,DateTime now)
         {
             db db = new db();
             ArrayList course = new ArrayList();
             SqlConnection conn = db.openconn();
-            string sql = "SELECT course.courseid,coursenumber,sectionnumber,firstname,middlename,lastname,suffix,classroomname,coursename,description,department.department FROM schedule join scheduletype on schedule.scheduleid = scheduletype.scheduleid  join type on type.typeid = scheduletype.typeid  join daytype on scheduletype.scheduletypeid = daytype.scheduletypeid join period on period.typedayid = daytype.daytypeid join courseperiod on period.periodid = courseperiod.periodid join course on course.courseid = courseperiod.courseid join section on course.sectionid = section.sectionid join userinfo on userinfo.userid = course.teacherid join classroom on classroom.classroomid =course.classroomid  join department on section.department = department.departmentid where schedule.scheduleid=@scheduleid and defaultvalue=1 and @schooldaynum % outofday= dayalt-1";
+            string sql = "SELECT course.courseid,coursenumber,sectionnumber,firstname,middlename,lastname,suffix,classroomname,coursename,description,department.department FROM schedule join scheduletype on schedule.scheduleid = scheduletype.scheduleid  join type on type.typeid = scheduletype.typeid  join daytype on scheduletype.scheduletypeid = daytype.scheduletypeid join period on period.typedayid = daytype.daytypeid join courseperiod on period.periodid = courseperiod.periodid join course on course.courseid = courseperiod.courseid join section on course.sectionid = section.sectionid join userinfo on userinfo.userid = course.teacherid join classroom on classroom.classroomid =course.classroomid  join department on section.department = department.departmentid where schedule.scheduleid=@scheduleid and type.typeid=@typeid and ((100 % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dayalt=0 and dateofweek=0) or (dateofweek =@dateofweek))";
             SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@typeid",db.gettypeid(db.getschool(userid),now));
+            cmd.Parameters.AddWithValue("@dateofweek", week);
             cmd.Parameters.AddWithValue("@scheduleid", db.getscheduleid(userid));
             cmd.Parameters.AddWithValue("@schooldaynum", schooldaynum);
             SqlDataReader rdr = cmd.ExecuteReader();
@@ -216,6 +218,48 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return course;
         }
+
+        private int gettypeid(int school,DateTime date)
+        {
+            db db = new db();
+            int typeid = 0;
+            SqlConnection conn = db.openconn();
+            string sql = "SELECT  type FROM [dbo].[schoolclosing] where type!=0 and date=@date and (schoolid=@school)";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@date", date);
+            cmd.Parameters.AddWithValue("@school", school);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {               
+                typeid = Convert.ToInt32(rdr["type"]);
+            }
+            else
+            {
+                typeid =db.getdefaulttype(school);
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return typeid;
+        }
+
+        private int getdefaulttype(int school)
+        {
+            db db = new db();
+            int typeid = 0;
+            SqlConnection conn = db.openconn();
+            string sql = "SELECT  typeid FROM [dbo].[type] where defaultvalue=0 and schoolid=@school";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@school", school);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                typeid = Convert.ToInt32(rdr["typeid"]);
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return typeid;
+        }
+
         public int getscheduleid(int userid)
         {
             db db = new db();
@@ -669,9 +713,8 @@ namespace SchoolsPortal.Models
             db db = new db();//db object
             bool list = false;
             SqlConnection conn = db.openconn();//open conn
-            String sql = "SELECT COUNT(*) as closing FROM [dbo].[schoolclosing] join school on school.districtid = schoolclosing.districtid join studentinfo on studentinfo.school = school.schoolid where studentid=@userid and date=@date and (schoolclosing.districtid=@districtid or schoolclosing.schoolid=@schoolid)";
+            String sql = "SELECT COUNT(*) as closing FROM [dbo].[schoolclosing] where type=0 and date=@date and (schoolclosing.districtid=@districtid or schoolclosing.schoolid=@schoolid)";
             SqlCommand cmd = new SqlCommand(sql, conn);//set up command
-            cmd.Parameters.AddWithValue("@userid", userid);//add parameter
             cmd.Parameters.AddWithValue("@date",DateTime.Now.Date);//add parameter
             cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(userid));//add parameter
             cmd.Parameters.AddWithValue("@schoolid", db.getschool(userid));//add parameter
