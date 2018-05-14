@@ -15,9 +15,10 @@ namespace SchoolsPortal.Models
         private string description; //description
         private name teacher;       //teacher
         private string classroom;   //classroom
-        private string period;      //period
+        private DateTime periodstart;
+        private DateTime periodend;
         private decimal grade;      //grade
-        public course(int courseid, string department, string coursecode, string sectioncode, string coursename, string description, name teacher, string classroom, string period, decimal grade)//course constructor
+        public course(int courseid, string department, string coursecode, string sectioncode, string coursename, string description, name teacher, string classroom,DateTime periodstart, DateTime periodend, decimal grade)//course constructor
         {
             this.courseid = courseid;
             this.department = department;
@@ -27,7 +28,8 @@ namespace SchoolsPortal.Models
             this.description = description;
             this.teacher = teacher;
             this.classroom = classroom;
-            this.period = period;
+            this.periodstart = periodstart;
+            this.periodend = periodend;
             this.grade = grade;
         }
 
@@ -67,9 +69,13 @@ namespace SchoolsPortal.Models
         {
             return classroom;
         }
-        public string getperiod()//get period
+        public DateTime getperiodstart()//get period
         {
-            return period;
+            return periodstart;
+        }
+        public DateTime getperiodend()//get period
+        {
+            return periodend;
         }
 
         public decimal getgrade()//get grade
