@@ -12,7 +12,7 @@ namespace SchoolsPortal.Controllers
         public ActionResult Index(int newstoriesid)
         {
             db db = new db();
-            if (db.checkifnewstories(newstoriesid, db.getfilterinfo(((user)Session["user"]).getusercred().getuserid())))
+            if (db.checkifnewstories(newstoriesid, db.getfilterinfo(((user)Session["user"]).getusercred().getuserid(),DateTime.Now),DateTime.Now))
             {
                 ViewBag.news = db.getnewstoriesinfo(newstoriesid);
                 return View();

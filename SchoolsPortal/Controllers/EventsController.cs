@@ -12,7 +12,7 @@ namespace SchoolsPortal.Controllers
         public ActionResult Index(int eventid)
         {
             db db = new db();
-            if (db.checkifevent(eventid,db.getfilterinfo(((user)Session["user"]).getusercred().getuserid())))
+            if (db.checkifevent(eventid,db.getfilterinfo(((user)Session["user"]).getusercred().getuserid(),DateTime.Now),DateTime.Now))
             {
                 ViewBag.Event = db.getsingleevents(eventid);
                 return View();

@@ -79,7 +79,7 @@ namespace SchoolsPortal.Controllers
             if (db.checkifschoolisclosed(((user)Session["user"]).getusercred().getuserid()) == false)
             {
                 //school is not close
-                DateTime startofschoolyear = db.getstartofschoolyear(((user)Session["user"]).getusercred().getuserid());//getfirst day of school
+                DateTime startofschoolyear = db.getstartofschoolyear(((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//getfirst day of school
                 if (startofschoolyear.Year != 1)//check if not default
                 {
                     int numofday = (int)((DateTime.Now.Date - startofschoolyear).TotalDays - db.getnumberofdayoff(startofschoolyear, DateTime.Now));
@@ -88,12 +88,12 @@ namespace SchoolsPortal.Controllers
             }
             ViewBag.schoolday = course;
             ViewBag.schoolyear = db.getschoolyear(schoolyear, ((user)Session["user"]).getusercred().getuserid());//get the list of school year
-            ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid());//get filter for event and newstories
+            ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get filter for event and newstories
             ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());//get all message for the user
-            ViewBag.events = db.getevents(ViewBag.filter);//get all the different 
-            ViewBag.newstories = db.getnewstories(ViewBag.filter);//get all the new stories
-            ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),schoolyear);//get the list of the different sport
-            ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),schoolyear);//get list of courses for current year
+            ViewBag.events = db.getevents(ViewBag.filter,DateTime.Now);//get all the different 
+            ViewBag.newstories = db.getnewstories(ViewBag.filter,DateTime.Now);//get all the new stories
+            ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),schoolyear,DateTime.Now);//get the list of the different sport
+            ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),schoolyear,DateTime.Now);//get list of courses for current year
            course a = new course();//new course all to call method for grade
            for (int x = 0; x < ViewBag.courses.Count; x++)//loop thru all the different course in the list
             {

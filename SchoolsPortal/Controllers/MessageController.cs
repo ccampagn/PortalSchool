@@ -29,7 +29,7 @@ namespace SchoolsPortal.Controllers
                 db db = new db();
                 //insert into database
                 int messageid = (int)Session["messageid"];
-                db.insertmessage(((user)Session["user"]).getusercred().getuserid(), messageid, obj.text);
+                db.insertmessage(((user)Session["user"]).getusercred().getuserid(), messageid, obj.text,DateTime.Now);
                 ViewBag.Message = db.getmessagethread(messageid);
                 ModelState.Clear();
                 return PartialView("message");

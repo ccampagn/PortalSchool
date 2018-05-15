@@ -21,7 +21,7 @@ namespace SchoolsPortal.Controllers
             if (Session["user"] != null)
             {
                 db db = new db();
-                ViewBag.reportcard = db.getschoolyears(((user)Session["user"]).getusercred().getuserid());
+                ViewBag.reportcard = db.getschoolyears(((user)Session["user"]).getusercred().getuserid(),DateTime.Now);
                 return View();
             }
             return RedirectToAction("Index", "Home");
