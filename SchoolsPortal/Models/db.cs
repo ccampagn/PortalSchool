@@ -93,7 +93,7 @@ namespace SchoolsPortal.Models
             SqlDataReader rdr = cmd.ExecuteReader();//data reader
             while (rdr.Read())//loop thru data reader
             {
-               // course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), new name(1, null, null, null, null, null, new DateTime()), rdr["classroomname"].ToString(), rdr["period"].ToString() + rdr["dayalt"].ToString(), 0));//add course to the array
+                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), new name(1, null, null, null, null, null, new DateTime()), rdr["classroomname"].ToString(),new DateTime(),new DateTime(), 0));//add course to the array
             }
             rdr.Close();//close the data reader
             db.closeconn(conn);//close the connection
@@ -201,37 +201,60 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close conn
             return incheck;//return if in course of not
         }
-        public ArrayList getcoursetoday(int schooldaynum,int userid,int week,DateTime now)
+        public ArrayList getcoursetoday(int schooldaynum,int userid,DateTime now,int type)
         {
             db db = new db();
             ArrayList course = new ArrayList();
             SqlConnection conn = db.openconn();
-            string sql = "SELECT course.courseid,coursenumber,sectionnumber,firstname,middlename,lastname,suffix,classroomname,coursename,description,department.department,periodstart,periodend FROM schedule join scheduletype on schedule.scheduleid = scheduletype.scheduleid  join type on type.typeid = scheduletype.typeid  join daytype on scheduletype.scheduletypeid = daytype.scheduletypeid join period on period.typedayid = daytype.daytypeid join courseperiod on period.periodid = courseperiod.periodid join course on course.courseid = courseperiod.courseid join section on course.sectionid = section.sectionid join userinfo on userinfo.userid = course.teacherid join classroom on classroom.classroomid = period.classroomid  join department on section.department = department.departmentid where schedule.scheduleid=@scheduleid and type.typeid=@typeid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek))";
-            SqlCommand cmd = new SqlCommand(sql, conn);
-            int test = db.gettypeid(db.getschool(userid),now);
-            cmd.Parameters.AddWithValue("@typeid",db.gettypeid(db.getschool(userid),now));
-            cmd.Parameters.AddWithValue("@dateofweek", week);
-            cmd.Parameters.AddWithValue("@scheduleid", db.getscheduleid(userid));
-            cmd.Parameters.AddWithValue("@schooldaynum", schooldaynum);
-            SqlDataReader rdr = cmd.ExecuteReader();
-            while (rdr.Read())
+            if (type == 1)
             {
-                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), new name(1, rdr["firstname"].ToString(), null, rdr["lastname"].ToString(), null, null, new DateTime()), rdr["classroomname"].ToString(),DateTime.Today.Add((TimeSpan)rdr["periodstart"]),DateTime.Today.Add((TimeSpan)rdr["periodend"]), 0));
+                string sql = "SELECT course.courseid,coursenumber,sectionnumber,firstname,middlename,lastname,suffix,classroomname,coursename,description,department.department,periodstart,periodend FROM schedule join scheduletype on schedule.scheduleid = scheduletype.scheduleid  join type on type.typeid = scheduletype.typeid  join daytype on scheduletype.scheduletypeid = daytype.scheduletypeid join period on period.typedayid = daytype.daytypeid join courseperiod on period.periodid = courseperiod.periodid join course on course.courseid = courseperiod.courseid join section on course.sectionid = section.sectionid join userinfo on userinfo.userid = course.teacherid join classroom on classroom.classroomid = period.classroomid  join department on section.department = department.departmentid where schedule.scheduleid=@scheduleid and type.typeid=@typeid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek))";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@typeid", db.gettypeid(type,userid, now));
+                cmd.Parameters.AddWithValue("@dateofweek", (int)now.DayOfWeek);
+                cmd.Parameters.AddWithValue("@scheduleid", db.getscheduleid(userid));
+                cmd.Parameters.AddWithValue("@schooldaynum", schooldaynum);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), new name(1, rdr["firstname"].ToString(), null, rdr["lastname"].ToString(), null, null, new DateTime()), rdr["classroomname"].ToString(), DateTime.Today.Add((TimeSpan)rdr["periodstart"]), DateTime.Today.Add((TimeSpan)rdr["periodend"]), 0));
+                }
+                rdr.Close();
             }
-            rdr.Close();
+            else
+            {
+                int schoolid = db.getschool(type, userid);
+                string sql = "SELECT course.courseid,department,coursename,coursenumber,sectionnumber,description,classroomname,periodstart,periodend from period join courseperiod on period.periodid =courseperiod.periodid join course on course.courseid = courseperiod.courseid join section on section.sectionid = course.sectionid join classroom on classroom.classroomid = period.classroomid join daytype on typedayid = daytypeid  join type on type.schoolid = classroom.schoolid  where teacherid = @userid and typeid =@typeid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek))";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@typeid", db.gettypeid(type,userid, now));
+                cmd.Parameters.AddWithValue("@dateofweek", (int)now.DayOfWeek);
+                cmd.Parameters.AddWithValue("@userid",userid);
+                cmd.Parameters.AddWithValue("@schooldaynum", schooldaynum);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(),null, rdr["classroomname"].ToString(), DateTime.Today.Add((TimeSpan)rdr["periodstart"]), DateTime.Today.Add((TimeSpan)rdr["periodend"]), 0));
+                }
+                rdr.Close();
+            }
+            
+            
             db.closeconn(conn);
             return course;
         }
 
-        private int gettypeid(int school,DateTime date)
+        private int gettypeid(int type,int userid,DateTime date)
         {
             db db = new db();
             int typeid = 0;
+            int a = db.getschool(type, userid);
+            int b = db.getdistrictid(type, userid);
             SqlConnection conn = db.openconn();
-            string sql = "SELECT  type FROM [dbo].[schoolclosing] where type!=0 and date=@date and (schoolid=@school)";
+            string sql = "SELECT  type FROM [dbo].[schoolclosing] where type!=0 and date=@date and (schoolid=@school or districtid=@districtid)";
             SqlCommand cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@date", date);
-            cmd.Parameters.AddWithValue("@school", school);
+            cmd.Parameters.AddWithValue("@school", db.getschool(type,userid));
+            cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type, userid));
             SqlDataReader rdr = cmd.ExecuteReader();
             if (rdr.Read())
             {               
@@ -239,7 +262,7 @@ namespace SchoolsPortal.Models
             }
             else
             {
-                typeid =db.getdefaulttype(school);
+                typeid =db.getdefaulttype(db.getschool(type, userid));
             }
             rdr.Close();
             db.closeconn(conn);
@@ -448,7 +471,7 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return lettergrade;
         }
-        public List<assignment> getallasignment(int assignmentid, int userid,DateTime date)
+        public List<assignment> getallasignment(int type,int assignmentid, int userid,DateTime date)
         {
             db db = new db();   //declare db object
             List<assignment> assignmnet = new List<assignment>();//list of the assignment
@@ -457,7 +480,7 @@ namespace SchoolsPortal.Models
             SqlCommand cmd = new SqlCommand(sql, conn);//setup commend
             cmd.Parameters.AddWithValue("@assignmentid", assignmentid); //setting the courseid
             cmd.Parameters.AddWithValue("@userid", userid);             //setting the userid
-            cmd.Parameters.AddWithValue("@schoolid", db.getschool(userid));
+            cmd.Parameters.AddWithValue("@schoolid", db.getschool(type,userid));
             cmd.Parameters.AddWithValue("@date", date);
             SqlDataReader rdr = cmd.ExecuteReader();//datareader
             while (rdr.Read())//read result
@@ -623,14 +646,14 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close conn
             return check;//return true/false
         }
-        public ArrayList getschoolyear(int yearid, int userid)//get list of schoolyear based on usedid,yearid use to selection current one
+        public ArrayList getschoolyear(int type,int yearid, int userid)//get list of schoolyear based on usedid,yearid use to selection current one
         {
             db db = new db();//db object
             ArrayList schoolyear = new ArrayList();//list for schoolyear
             SqlConnection conn = db.openconn();//open db conn
             String sql = "SELECT schoolyearid,schoolyear,startpost,endpost FROM schoolyear where districtid = @districtid  order by startyear";//sql query get school year
             SqlCommand cmd = new SqlCommand(sql, conn);//command
-            cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(userid));//setting parameter
+            cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type,userid));//setting parameter
             SqlDataReader rdr = cmd.ExecuteReader();//run sql statement
             while (rdr.Read())//run for each record
             {
@@ -666,15 +689,17 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close conn
             return schoolyear;//list of the different schoolyear and if selected
         }
-        public int getnumberofdayoff(DateTime start, DateTime cur)//get number of day off in a range
+        public int getnumberofdayoff(int type,DateTime start, DateTime cur,int userid)//get number of day off in a range
         {
             db db = new db();//db object
             SqlConnection conn = db.openconn();//open conn
             int numofclos = 0;//number of day close
-            String sql = "SELECT COUNT(*) as numofclos FROM [dbo].[schoolclosing] join school on school.districtid = schoolclosing.districtid join studentinfo on studentinfo.school = school.schoolid where studentid=1 and date>@startdate and date<@enddate";//sql get number of close day between 2 dates
+            String sql = "SELECT COUNT(*) as numofclos FROM [dbo].[schoolclosing] where date>@startdate and date<@enddate and ((districtid =@districtid) or (schoolid=@schoolid and districtid=0))";//sql get number of close day between 2 dates
             SqlCommand cmd = new SqlCommand(sql, conn);//command
             cmd.Parameters.AddWithValue("@startdate", start);//add parameter
             cmd.Parameters.AddWithValue("@enddate", cur);//add parameter
+            cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type,userid));//add parameter
+            cmd.Parameters.AddWithValue("@schoolid", db.getschool(type,userid));//add parameter
             SqlDataReader rdr = cmd.ExecuteReader();//run query
             if (rdr.Read())//get result
             {
@@ -719,7 +744,7 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close conn
             return dayalt;//return dayalt
         }
-        public bool checkifschoolisclosed(int userid)//get course for today based on userid
+        public bool checkifschoolisclosed(int type,int userid)//get course for today based on userid
         {           
             db db = new db();//db object
             bool list = false;
@@ -727,8 +752,8 @@ namespace SchoolsPortal.Models
             String sql = "SELECT COUNT(*) as closing FROM [dbo].[schoolclosing] where type=0 and date=@date and (schoolclosing.districtid=@districtid or schoolclosing.schoolid=@schoolid)";
             SqlCommand cmd = new SqlCommand(sql, conn);//set up command
             cmd.Parameters.AddWithValue("@date",DateTime.Now.Date);//add parameter
-            cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(userid));//add parameter
-            cmd.Parameters.AddWithValue("@schoolid", db.getschool(userid));//add parameter
+            cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type,userid));//add parameter
+            cmd.Parameters.AddWithValue("@schoolid", db.getschool(type,userid));//add parameter
             SqlDataReader rdr = cmd.ExecuteReader();//data reader
             if (rdr.Read())//reader data
             {
@@ -749,12 +774,12 @@ namespace SchoolsPortal.Models
         }
         #endregion
         #region school
-        public ArrayList getdirectory(int userid, string position, string grade)
+        public ArrayList getdirectory(int type,int userid, string position, string grade)
         {
             db db = new db();
             ArrayList list = new ArrayList();
             SqlConnection conn = db.openconn();
-            int schoolid = db.getschool(userid);
+            int schoolid = db.getschool(type,userid);
             String sql = "";
 
             if (position == "Staff")
@@ -772,7 +797,7 @@ namespace SchoolsPortal.Models
             }
 
             SqlCommand cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@schoolid", db.getschool(userid));
+            cmd.Parameters.AddWithValue("@schoolid", db.getschool(type,userid));
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
@@ -782,24 +807,38 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return list;
         }
-        public int getschool(int userid)
+        public int getschool(int type,int userid)
         {
             db db = new db();
             SqlConnection conn = db.openconn();
             int schoolid = 0;
-            String sql = "select school from studentinfo where studentid = @userid";
-            SqlCommand cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@userid", userid);
-            SqlDataReader rdr = cmd.ExecuteReader();
-            if (rdr.Read())
+            if (type == 1)
             {
-                schoolid = Convert.ToInt32(rdr["school"]);
+                String sql = "select school from studentinfo where studentid = @userid";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@userid", userid);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.Read())
+                {
+                    schoolid = Convert.ToInt32(rdr["school"]);
+                }
+                rdr.Close();
+            } else
+            {
+                String sql = "select school from staffinfo where staffid = @userid";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@userid", userid);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.Read())
+                {
+                    schoolid = Convert.ToInt32(rdr["school"]);
+                }
+                rdr.Close();
             }
-            rdr.Close();
             db.closeconn(conn);
             return schoolid;
         }
-        public ArrayList getallposition(int userid)
+        public ArrayList getallposition(int type,int userid)
         {
             db db = new db();
             ArrayList list = new ArrayList();
@@ -807,7 +846,7 @@ namespace SchoolsPortal.Models
             SqlConnection conn = db.openconn();
             String sql = "SELECT positionid,position FROM[dbo].[position] where distrinctid = @districtid;";
             SqlCommand cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(userid));
+            cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type,userid));
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
@@ -1208,22 +1247,42 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return studentinfo;
         }
-        public int getdistrictid(int userid)//get district per userid
+        public int getdistrictid(int type,int userid)//get district per userid
         {
             db db = new db();//create db object
             int districtid = 0;//default districtid
-            SqlConnection conn = db.openconn();//open db conn
-            String sql = "SELECT district.districtid FROM studentinfo join school on studentinfo.school=school.schoolid  join district on school.districtid = district.districtid where studentid=@userid";//sql query
-            SqlCommand cmd = new SqlCommand(sql, conn);//setup command
-            cmd.Parameters.AddWithValue("@userid", userid);//add parameter
-            SqlDataReader rdr = cmd.ExecuteReader();
-            while (rdr.Read())
+            if (type == 1)
             {
-                districtid = Convert.ToInt32(rdr["districtid"]);
+                SqlConnection conn = db.openconn();//open db conn
+                String sql = "SELECT district.districtid FROM studentinfo join school on studentinfo.school=school.schoolid  join district on school.districtid = district.districtid where studentid=@userid";//sql query
+                SqlCommand cmd = new SqlCommand(sql, conn);//setup command
+                cmd.Parameters.AddWithValue("@userid", userid);//add parameter
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    districtid = Convert.ToInt32(rdr["districtid"]);
 
+                }
+                rdr.Close();
+                db.closeconn(conn);
             }
-            rdr.Close();
-            db.closeconn(conn);
+            else
+            {
+                SqlConnection conn = db.openconn();//open db conn
+                String sql = "SELECT district.districtid FROM staffinfo join school on staffinfo.school=school.schoolid  join district on school.districtid = district.districtid where staffid=@userid";//sql query
+                SqlCommand cmd = new SqlCommand(sql, conn);//setup command
+                cmd.Parameters.AddWithValue("@userid", userid);//add parameter
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    districtid = Convert.ToInt32(rdr["districtid"]);
+
+                }
+                rdr.Close();
+                db.closeconn(conn);
+            }
+            
+            
             return districtid;
         }
         public int getstaffdistrictid(int userid)//get district per staffid

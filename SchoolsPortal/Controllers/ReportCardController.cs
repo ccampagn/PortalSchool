@@ -37,7 +37,7 @@ namespace SchoolsPortal.Controllers
                 course a = new course();
                 for (int x = 0; x < courseid.Count; x++)
                 {
-                    courseid[x].setlettergrade(db.getlettergrade(((user)Session["user"]).getusercred().getuserid(), 100 * a.finalcalcgrade(Convert.ToInt32(courseid[x].getcourseid()), Convert.ToInt32(Request["schoolyearid"]))));
+                    courseid[x].setlettergrade(db.getlettergrade(((user)Session["user"]).getusercred().getuserid(), 100 * a.finalcalcgrade(0,Convert.ToInt32(courseid[x].getcourseid()), Convert.ToInt32(Request["schoolyearid"]))));
                 }
                 createpdf pdf = new createpdf();
                 //pdf.createpass();

@@ -77,9 +77,9 @@ namespace SchoolsPortal.Controllers
             db db = new db();//create db object
             if (db.checkinclass(coursesid, ((user)Session["user"]).getusercred().getuserid())) {//class to make sure user have access to this page
                 Session["courseid"] = coursesid;
-                ViewBag.assignment = db.getallasignment(coursesid, ((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get list of all the different assignment
+                ViewBag.assignment = db.getallasignment(((user)Session["user"]).getuserinfo().getusertype(), coursesid, ((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get list of all the different assignment
                 course a = new course();//create course object
-                ViewBag.displaygrade = a.calcdisplaygrade(coursesid, ((user)Session["user"]).getusercred().getuserid());//calc display grade for all the different categories
+                ViewBag.displaygrade = a.calcdisplaygrade(((user)Session["user"]).getuserinfo().getusertype(),coursesid, ((user)Session["user"]).getusercred().getuserid());//calc display grade for all the different categories
                 ViewBag.finalgrade = a.calcgradedisplay(ViewBag.displaygrade);//calc the final grade
                 ViewBag.messageboard = db.getmessageboard(coursesid);//get message board based on the courseid
                 return View();//return the course page
@@ -96,9 +96,9 @@ namespace SchoolsPortal.Controllers
                 int courseid = (int)Session["courseid"];
                 db.insertmessageboard(((user)Session["user"]).getusercred().getuserid(),courseid, obj.text);
                 ViewBag.messageboard = db.getmessageboard(courseid);
-                ViewBag.assignment = db.getallasignment(courseid, ((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get list of all the different assignment
+                ViewBag.assignment = db.getallasignment(((user)Session["user"]).getuserinfo().getusertype(),courseid, ((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get list of all the different assignment
                 course a = new course();//create course object
-                ViewBag.displaygrade = a.calcdisplaygrade(courseid, ((user)Session["user"]).getusercred().getuserid());//calc display grade for all the different categories
+                ViewBag.displaygrade = a.calcdisplaygrade(((user)Session["user"]).getuserinfo().getusertype(),courseid, ((user)Session["user"]).getusercred().getuserid());//calc display grade for all the different categories
                 ViewBag.finalgrade = a.calcgradedisplay(ViewBag.displaygrade);//calc the final grade
                 ViewBag.messageboard = db.getmessageboard(courseid);//get message board based on the courseid
                 ModelState.Clear();

@@ -27,7 +27,7 @@ namespace SchoolsPortal.Controllers
             db db = new db();          
             if (Session["user"] != null)//check if valid user
             {
-                if (Session["schoolyearid"] == null)//check if first time ir if change of schoolyearid
+                if (Session["schoolyearid"] == null)//check if first time in if change of schoolyearid
                 {
                     getdata(0);//get varies data
                 }
@@ -74,20 +74,20 @@ namespace SchoolsPortal.Controllers
         private void getdata(int schoolyear)  //getdata for view elements of the home page
         {
             db db = new db();   //access db methods
-            Session["district"] = db.getdistrictid(((user)Session["user"]).getusercred().getuserid());//get district id
+            Session["district"] = db.getdistrictid(((user)Session["user"]).getuserinfo().getusertype(), ((user)Session["user"]).getusercred().getuserid());//get district id
             ArrayList course = new ArrayList();
-            if (db.checkifschoolisclosed(((user)Session["user"]).getusercred().getuserid()) == false)
+            if (db.checkifschoolisclosed(((user)Session["user"]).getuserinfo().getusertype(),((user)Session["user"]).getusercred().getuserid()) == false)
             {
                 //school is not close
-                DateTime startofschoolyear = db.getstartofschoolyear(((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//getfirst day of school
+                DateTime startofschoolyear = db.getstartofschoolyear(((user)Session["user"]).getusercred().getuserid(), DateTime.Now);//getfirst day of school
                 if (startofschoolyear.Year != 1)//check if not default
                 {
-                    int numofday = (int)((DateTime.Now.Date - startofschoolyear).TotalDays - db.getnumberofdayoff(startofschoolyear, DateTime.Now));
-                    course = db.getcoursetoday(numofday, ((user)Session["user"]).getusercred().getuserid(), (int)DateTime.Now.DayOfWeek,DateTime.Now);
+                    int numofday = (int)((DateTime.Now.Date - startofschoolyear).TotalDays - db.getnumberofdayoff(((user)Session["user"]).getuserinfo().getusertype(),startofschoolyear, DateTime.Now, ((user)Session["user"]).getusercred().getuserid()));
+                    course = db.getcoursetoday(numofday, ((user)Session["user"]).getusercred().getuserid(), DateTime.Now, ((user)Session["user"]).getuserinfo().getusertype());
                 }
-            }
+            }        
             ViewBag.schoolday = course;
-            ViewBag.schoolyear = db.getschoolyear(schoolyear, ((user)Session["user"]).getusercred().getuserid());//get the list of school year
+            ViewBag.schoolyear = db.getschoolyear(((user)Session["user"]).getuserinfo().getusertype(),schoolyear, ((user)Session["user"]).getusercred().getuserid());//get the list of school year
             ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get filter for event and newstories
             ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());//get all message for the user
             ViewBag.events = db.getevents(ViewBag.filter,DateTime.Now);//get all the different 
@@ -97,7 +97,7 @@ namespace SchoolsPortal.Controllers
            course a = new course();//new course all to call method for grade
            for (int x = 0; x < ViewBag.courses.Count; x++)//loop thru all the different course in the list
             {
-                decimal finalgrade = a.finalcalcgrade(ViewBag.courses[x].getcourseid(), ((user)Session["user"]).getusercred().getuserid());//calc final grade for spec course
+                decimal finalgrade = a.finalcalcgrade(((user)Session["user"]).getuserinfo().getusertype(),ViewBag.courses[x].getcourseid(), ((user)Session["user"]).getusercred().getuserid());//calc final grade for spec course
                 (ViewBag.courses[x]).setgrade(Math.Round(finalgrade * 100));//set the final grade
 
            }

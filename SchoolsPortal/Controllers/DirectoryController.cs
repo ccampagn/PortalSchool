@@ -13,7 +13,7 @@ namespace SchoolsPortal.Controllers
         public ActionResult Index()
         {
             db db = new db();
-            ViewBag.directory = db.getdirectory(((user)Session["user"]).getusercred().getuserid(),"","");
+            ViewBag.directory = db.getdirectory(0,((user)Session["user"]).getusercred().getuserid(),"","");
             return View("~/Views/Directory/directory.cshtml");
         }
         [HttpPost]
@@ -22,7 +22,7 @@ namespace SchoolsPortal.Controllers
             if (Session["user"] != null)
             {
                 db db = new db();
-                ViewBag.directory = db.getdirectory(((user)Session["user"]).getusercred().getuserid(),obj.position,obj.grade);
+                ViewBag.directory = db.getdirectory(0,((user)Session["user"]).getusercred().getuserid(),obj.position,obj.grade);
                 ModelState.Clear();
                 return PartialView("directory");
             }

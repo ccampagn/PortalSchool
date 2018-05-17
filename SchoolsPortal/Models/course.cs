@@ -86,10 +86,10 @@ namespace SchoolsPortal.Models
         {
             this.grade = grade;
         }
-        public List<gradedisplay> calcdisplaygrade(int course, int userid)//calc display grade return list as grade
+        public List<gradedisplay> calcdisplaygrade(int type,int course, int userid)//calc display grade return list as grade
         {
             db db = new db();
-            List<assignment> assign = db.getallasignment(course, userid,DateTime.Now);//get list of all the assignment with grade for all 
+            List<assignment> assign = db.getallasignment(type,course, userid,DateTime.Now);//get list of all the assignment with grade for all 
             List<gradedisplay> gradedisplay = db.getgradedisplay(course);//get the grade display
             if (db.getcoursegradetype(course) == 1)//check if grade type for the course point,category, it is point here
             {
@@ -146,9 +146,9 @@ namespace SchoolsPortal.Models
 
             return percenttotal / finalgrade;//get final grade by div percenttotal by finalgrade
         }
-        public decimal finalcalcgrade(int course, int userid)//method calc 
+        public decimal finalcalcgrade(int type,int course, int userid)//method calc 
         {
-            return calcgradedisplay(calcdisplaygrade(course, userid));//calcgradedisplay
+            return calcgradedisplay(calcdisplaygrade(type,course, userid));//calcgradedisplay
         }
     }
 }
