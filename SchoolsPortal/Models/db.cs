@@ -16,7 +16,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;//conn variable
             string myConnectionString;//conn string
-           
+            
             conn = new SqlConnection();//create new conn
             conn.ConnectionString = myConnectionString;//setting conn
             conn.Open();//open conn to the db
@@ -81,52 +81,78 @@ namespace SchoolsPortal.Models
         }
         #endregion
         #region course
-        public ArrayList getcourseteacher(int userid, int schoolyear)//get the courses for a teacher
-        {
-            db db = new db();//db object
-            ArrayList course = new ArrayList();//arraylist for different course result
-            SqlConnection conn = db.openconn();//open the db
-            string sql = "SELECT course.courseid,coursenumber,course.sectionnumber,coursename,description,department.department,credit,classroom.classroomname,period,dayalt FROM [dbo].[course] join coursetime on course.courseid = coursetime.courseid join section on course.sectionid = section.sectionid join department on section.department = department.departmentid join classroom on classroom.classroomid =course.classroomid  where teacherid = @userid and schoolyearid=1";//sql query get courses for teacher
-            SqlCommand cmd = new SqlCommand(sql, conn);//setup command
-            cmd.Parameters.AddWithValue("@userid", userid);//set the userid parameter
-            //cmd.Parameters.AddWithValue("@schoolyear", schoolyear);
-            SqlDataReader rdr = cmd.ExecuteReader();//data reader
-            while (rdr.Read())//loop thru data reader
-            {
-                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), new name(1, null, null, null, null, null, new DateTime()), rdr["classroomname"].ToString(),new DateTime(),new DateTime(), 0));//add course to the array
-            }
-            rdr.Close();//close the data reader
-            db.closeconn(conn);//close the connection
-            return course;//return the arraylist for courses
-        }
-
-        public ArrayList getcourse(int userid, int schoolyear,DateTime date)//get course list for userid and schoolyear
+        public ArrayList getcourse(int type, int userid, int schoolyear, DateTime date)//get course list for userid and schoolyear
         {
             db db = new db();//db object 
             ArrayList course = new ArrayList();//list of courses
             SqlConnection conn = db.openconn();//open conn
             string sql = "";//default sql statement
-            if (schoolyear == 0)//onload no use dropdown menu, get schoolyear 
+            if (type == 1)
             {
-                sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and startpost<@date and endpost>@date";//select course between postdate for the schoolyear
+                if (schoolyear == 0)//onload no use dropdown menu, get schoolyear 
+                {
+                    sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and startpost<@date and endpost>@date";//select course between postdate for the schoolyear
+                }
+                else
+                {
+                    sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and schoolyear.schoolyearid=@schoolyear";//select course for certain schoolyear
+                }
+                SqlCommand cmd = new SqlCommand(sql, conn);//command
+                cmd.Parameters.AddWithValue("@userid", userid);//set userid parameter
+                cmd.Parameters.AddWithValue("@schoolyear", schoolyear);//set schoolyear parameter
+                cmd.Parameters.AddWithValue("@date", date);
+                SqlDataReader rdr = cmd.ExecuteReader();//run query
+                while (rdr.Read())//read thru datareader
+                {
+                    course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), new name(1, rdr["firstname"].ToString(), null, rdr["lastname"].ToString(), null, null, new DateTime()), "", new DateTime(), new DateTime(), 0));//add course to list               
+                }
+                rdr.Close();//close datareader
             }
             else
             {
-                sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit FROM coursestudent join course on course.courseid = coursestudent.courseid join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where coursestudent.studentid = @userid and schoolyear.schoolyearid=@schoolyear";//select course for certain schoolyear
+                if (schoolyear == 0)//onload no use dropdown menu, get schoolyear 
+                {
+                    sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit FROM course  join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where course.teacherid = @userid and startpost<@date and endpost>@date";//select course between postdate for the schoolyear
+                }
+                else
+                {
+                    sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,middlename,lastname,suffix,credit FROM course join section on course.sectionid = section.sectionid join department on department.departmentid = section.department join userinfo on userinfo.nameid = course.teacherid join schoolyear on course.schoolyearid = schoolyear.schoolyearid where course.teacherid = @userid and schoolyear.schoolyearid=@schoolyear";//select course for certain schoolyear
+                }
+                SqlCommand cmd = new SqlCommand(sql, conn);//command
+                cmd.Parameters.AddWithValue("@userid", userid);//set userid parameter
+                cmd.Parameters.AddWithValue("@schoolyear", schoolyear);//set schoolyear parameter
+                cmd.Parameters.AddWithValue("@date", date);
+                SqlDataReader rdr = cmd.ExecuteReader();//run query
+                while (rdr.Read())//read thru datareader
+                {
+                    course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), new name(1, rdr["firstname"].ToString(), null, rdr["lastname"].ToString(), null, null, new DateTime()), "", new DateTime(), new DateTime(), 0));//add course to list               
+                }
+                rdr.Close();//close datareader
+
             }
-            SqlCommand cmd = new SqlCommand(sql, conn);//command
-            cmd.Parameters.AddWithValue("@userid", userid);//set userid parameter
-            cmd.Parameters.AddWithValue("@schoolyear", schoolyear);//set schoolyear parameter
-            cmd.Parameters.AddWithValue("@date", date);
-            SqlDataReader rdr = cmd.ExecuteReader();//run query
-            while (rdr.Read())//read thru datareader
-            {
-                course.Add(new course(Convert.ToInt32(rdr["courseid"]), rdr["department"].ToString(), rdr["coursenumber"].ToString(), rdr["sectionnumber"].ToString(), rdr["coursename"].ToString(), rdr["description"].ToString(), new name(1, rdr["firstname"].ToString(), null, rdr["lastname"].ToString(), null, null, new DateTime()), "",new DateTime(),new DateTime(), 0));//add course to list               
-            }
-            rdr.Close();//close datareader
             db.closeconn(conn);//close conn
             return course;//return list of course
         }
+
+        public ArrayList getstudents(int courseid)
+        {
+            db db = new db();
+            ArrayList list = new ArrayList();
+            SqlConnection conn = db.openconn();
+            String sql = "select studentid from coursestudent where courseid=@courseid";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@courseid", courseid);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(Convert.ToInt32(rdr["studentid"]));
+
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return list;
+        }
+
         public ArrayList getcourseselect(int districtid,DateTime date)
         {
             db db = new db();
@@ -165,24 +191,6 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return list;
         }
-        public ArrayList getcoursepick(int districtid)
-        {
-            db db = new db();
-            ArrayList list = new ArrayList();
-            SqlConnection conn = db.openconn();
-            String sql = "SELECT section.sectionid,department.department,section.coursename,section.description,section.coursenumber,section.credit,section.districtid FROM [dbo].[section]  join department on department.departmentid = section.department where section.districtid =@districtid";
-            SqlCommand cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@districtid", districtid);
-            SqlDataReader rdr = cmd.ExecuteReader();
-            while (rdr.Read())
-            {
-                //list.Add(new course(Convert.ToInt32(rdr["sectionid"]), rdr["department"].ToString(),rdr["coursenumber"].ToString(),null, rdr["coursename"].ToString(), rdr["description"].ToString(),null,null,null,null, 0));
-
-            }
-            rdr.Close();
-            db.closeconn(conn);
-            return list;
-        }
         public bool checkinclass(int coursesid, int userid)//check if user is in a course
         {
             db db = new db();//db object
@@ -208,11 +216,11 @@ namespace SchoolsPortal.Models
             SqlConnection conn = db.openconn();
             if (type == 1)
             {
-                string sql = "SELECT course.courseid,coursenumber,sectionnumber,firstname,middlename,lastname,suffix,classroomname,coursename,description,department.department,periodstart,periodend FROM schedule join scheduletype on schedule.scheduleid = scheduletype.scheduleid  join type on type.typeid = scheduletype.typeid  join daytype on scheduletype.scheduletypeid = daytype.scheduletypeid join period on period.typedayid = daytype.daytypeid join courseperiod on period.periodid = courseperiod.periodid join course on course.courseid = courseperiod.courseid join section on course.sectionid = section.sectionid join userinfo on userinfo.userid = course.teacherid join classroom on classroom.classroomid = period.classroomid  join department on section.department = department.departmentid where schedule.scheduleid=@scheduleid and type.typeid=@typeid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek))";
+                string sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,lastname,classroomname,periodstart,periodend from  course  join section on section.sectionid = course.sectionid join coursestudent on course.courseid = coursestudent.courseid join courseperiod on course.courseid = courseperiod.courseid join period on courseperiod.periodid = period.periodid join daytype on daytype.daytypeid = period.typedayid  join type on type.typeid = daytype.scheduletypeid join userinfo on userinfo.userid = course.teacherid join classroom on classroom.classroomid = period.classroomid  join department on section.department = department.departmentid where typeid=@typeid and studentid =@userid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek)) order by periodstart";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@typeid", db.gettypeid(type,userid, now));
                 cmd.Parameters.AddWithValue("@dateofweek", (int)now.DayOfWeek);
-                cmd.Parameters.AddWithValue("@scheduleid", db.getscheduleid(userid));
+                cmd.Parameters.AddWithValue("@userid", userid);
                 cmd.Parameters.AddWithValue("@schooldaynum", schooldaynum);
                 SqlDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -224,7 +232,7 @@ namespace SchoolsPortal.Models
             else
             {
                 int schoolid = db.getschool(type, userid);
-                string sql = "SELECT course.courseid,department,coursename,coursenumber,sectionnumber,description,classroomname,periodstart,periodend from period join courseperiod on period.periodid =courseperiod.periodid join course on course.courseid = courseperiod.courseid join section on section.sectionid = course.sectionid join classroom on classroom.classroomid = period.classroomid join daytype on typedayid = daytypeid  join type on type.schoolid = classroom.schoolid  where teacherid = @userid and typeid =@typeid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek))";
+                string sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,classroomname,periodstart,periodend from  course  join section on section.sectionid = course.sectionid  join courseperiod on course.courseid = courseperiod.courseid join period on courseperiod.periodid = period.periodid join daytype on daytype.daytypeid = period.typedayid  join type on type.typeid = daytype.scheduletypeid join classroom on classroom.classroomid = period.classroomid  join department on section.department = department.departmentid where typeid=@typeid and teacherid =@userid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek)) order by periodstart";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@typeid", db.gettypeid(type,userid, now));
                 cmd.Parameters.AddWithValue("@dateofweek", (int)now.DayOfWeek);

@@ -76,6 +76,7 @@ namespace SchoolsPortal.Controllers
             db db = new db();   //access db methods
             Session["district"] = db.getdistrictid(((user)Session["user"]).getuserinfo().getusertype(), ((user)Session["user"]).getusercred().getuserid());//get district id
             ArrayList course = new ArrayList();
+            ViewBag.type = ((user)Session["user"]).getuserinfo().getusertype();
             if (db.checkifschoolisclosed(((user)Session["user"]).getuserinfo().getusertype(),((user)Session["user"]).getusercred().getuserid()) == false)
             {
                 //school is not close
@@ -93,14 +94,30 @@ namespace SchoolsPortal.Controllers
             ViewBag.events = db.getevents(ViewBag.filter,DateTime.Now);//get all the different 
             ViewBag.newstories = db.getnewstories(ViewBag.filter,DateTime.Now);//get all the new stories
             ViewBag.sport = db.getsportlist(((user)Session["user"]).getusercred().getuserid(),schoolyear,DateTime.Now);//get the list of the different sport
-            ViewBag.courses = db.getcourse(((user)Session["user"]).getusercred().getuserid(),schoolyear,DateTime.Now);//get list of courses for current year
+            ViewBag.courses = db.getcourse(((user)Session["user"]).getuserinfo().getusertype(),((user)Session["user"]).getusercred().getuserid(),schoolyear,DateTime.Now);//get list of courses for current year
            course a = new course();//new course all to call method for grade
-           for (int x = 0; x < ViewBag.courses.Count; x++)//loop thru all the different course in the list
-            {
-                decimal finalgrade = a.finalcalcgrade(((user)Session["user"]).getuserinfo().getusertype(),ViewBag.courses[x].getcourseid(), ((user)Session["user"]).getusercred().getuserid());//calc final grade for spec course
-                (ViewBag.courses[x]).setgrade(Math.Round(finalgrade * 100));//set the final grade
+                for (int x = 0; x < ViewBag.courses.Count; x++)//loop thru all the different course in the list
+                {
+                    if (((user)Session["user"]).getuserinfo().getusertype() == 2)
+                    {
+                        ViewBag.students = db.getstudents(ViewBag.courses[x].getcourseid());
+                    }
+                    else
+                    {
+                        ArrayList list = new ArrayList();
+                        list.Add(((user)Session["user"]).getusercred().getuserid());
+                        ViewBag.students = list;
+                    }
+                    decimal finalgrade = 0;
+                    for (int y = 0; y < ViewBag.students.Count; y++)
+                    {
+                    int userid = ViewBag.students[y];
 
-           }
+                        finalgrade = finalgrade+a.finalcalcgrade(((user)Session["user"]).getuserinfo().getusertype(), ViewBag.courses[x].getcourseid(), userid);//calc final grade for spec course
+                        
+                    }
+                    (ViewBag.courses[x]).setgrade(Math.Round(finalgrade/ ViewBag.students.Count * 100));//set the final grade
+                }
         }
     }
 }
