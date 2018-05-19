@@ -92,7 +92,7 @@ namespace SchoolsPortal.Controllers
             ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get filter for event and newstories
             ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());//get all message for the user
             ViewBag.events = db.getevents(((user)Session["user"]).getuserinfo().getusertype(), ((user)Session["user"]).getusercred().getuserid(), DateTime.Now);//get all the different 
-            ViewBag.newstories = db.getnewstories(ViewBag.filter,DateTime.Now);//get all the new stories
+            ViewBag.newstories = db.getnewstories(((user)Session["user"]).getuserinfo().getusertype(), ((user)Session["user"]).getusercred().getuserid(), DateTime.Now);//get all the new stories
             ViewBag.sport = db.getsportlist(((user)Session["user"]).getuserinfo().getusertype(),((user)Session["user"]).getusercred().getuserid(),schoolyear,DateTime.Now);//get the list of the different sport
             ViewBag.courses = db.getcourse(((user)Session["user"]).getuserinfo().getusertype(),((user)Session["user"]).getusercred().getuserid(),schoolyear,DateTime.Now);//get list of courses for current year
            course a = new course();//new course all to call method for grade
