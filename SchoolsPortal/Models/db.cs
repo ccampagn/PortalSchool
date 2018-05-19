@@ -16,7 +16,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;//conn variable
             string myConnectionString;//conn string
-            
+           
             conn = new SqlConnection();//create new conn
             conn.ConnectionString = myConnectionString;//setting conn
             conn.Open();//open conn to the db
@@ -29,32 +29,60 @@ namespace SchoolsPortal.Models
         }
         #endregion
         #region sports
-        public ArrayList getsportlist(int userid, int year,DateTime date)//get the list of the different sport based on userid and schoolyear
+        public ArrayList getsportlist(int type,int userid, int year,DateTime date)//get the list of the different sport based on userid and schoolyear
         {
             db db = new db();//db object
             ArrayList sportlist = new ArrayList();//arraylist to return
             SqlConnection conn = db.openconn();//open conn
             string sql = "";//setting sql to blank
-            if (year == 0)//default for currentyear
+            if (type == 1)
             {
-                sql = "SELECT idsportlist,sport,levelname,seasonname,firstname,lastname,sex.sex,schoolyear FROM [dbo].[sportlist] join sport on sportlist.sportid = sport.sportid join sportlevel on sportlist.sportlevelid=sportlevel.idsportlevel join season on sportlist.seasonid =season.idseason join userinfo on sportlist.coachid=userinfo.userid join sex on sportlist.sexid = sex.sexid join schoolyear on sportlist.schoolyearid = schoolyear.schoolyearid join sportuser on sportuser.sportlistid = sportlist.idsportlist where sportuser.userid =@userid and startpost<@date and endpost>@date order by season.idseason";//get sport for current schoolyear
+                if (year == 0)//default for currentyear
+                {
+                    sql = "SELECT idsportlist,sport,levelname,seasonname,firstname,lastname,sex.sex,schoolyear FROM [dbo].[sportlist] join sport on sportlist.sportid = sport.sportid join sportlevel on sportlist.sportlevelid=sportlevel.idsportlevel join season on sportlist.seasonid =season.idseason join userinfo on sportlist.coachid=userinfo.userid join sex on sportlist.sexid = sex.sexid join schoolyear on sportlist.schoolyearid = schoolyear.schoolyearid join sportuser on sportuser.sportlistid = sportlist.idsportlist where sportuser.userid =@userid and startpost<@date and endpost>@date order by season.idseason";//get sport for current schoolyear
+
+                }
+                else//if dropdown is select
+                {
+                    sql = "SELECT idsportlist,sport,levelname,seasonname,firstname,lastname,sex.sex,schoolyear FROM [dbo].[sportlist] join sport on sportlist.sportid = sport.sportid join sportlevel on sportlist.sportlevelid=sportlevel.idsportlevel join season on sportlist.seasonid =season.idseason join userinfo on sportlist.coachid=userinfo.userid join sex on sportlist.sexid = sex.sexid join schoolyear on sportlist.schoolyearid = schoolyear.schoolyearid join sportuser on sportuser.sportlistid = sportlist.idsportlist where sportuser.userid =@userid and schoolyear.schoolyearid=@schoolyear order by season.idseason";//get sport for certain schoolyear
+                }
+
+                SqlCommand cmd = new SqlCommand(sql, conn);//sql command
+                cmd.Parameters.AddWithValue("@userid", userid);//add userid parameter
+                cmd.Parameters.AddWithValue("@schoolyear", year);//add schoolyear parameter
+                cmd.Parameters.AddWithValue("@date", date);//add schoolyear parameter
+                SqlDataReader rdr = cmd.ExecuteReader();//get the data
+                while (rdr.Read())//loop thru the datareader
+                {
+                    sportlist.Add(new sport(Convert.ToInt32(rdr["idsportlist"]), rdr["seasonname"].ToString(), rdr["sex"].ToString(), rdr["sport"].ToString(), rdr["levelname"].ToString(), new name(1, rdr["firstname"].ToString(), null, rdr["lastname"].ToString(), null, null, new DateTime())));//add to list of sport
+                }
+                rdr.Close();//close datareader
+            }
+            else
+            {
+                if (year == 0)//default for currentyear
+                {
+                    sql = "SELECT idsportlist,sport,levelname,seasonname,firstname,lastname,sex.sex,schoolyear FROM [dbo].[sportlist] join sport on sportlist.sportid = sport.sportid join sportlevel on sportlist.sportlevelid=sportlevel.idsportlevel join season on sportlist.seasonid =season.idseason join userinfo on sportlist.coachid=userinfo.userid join sex on sportlist.sexid = sex.sexid join schoolyear on sportlist.schoolyearid = schoolyear.schoolyearid where coachid =@userid and startpost<@date and endpost>@date order by season.idseason";//get sport for current schoolyear
+
+                }
+                else//if dropdown is select
+                {
+                    sql = "SELECT idsportlist,sport,levelname,seasonname,firstname,lastname,sex.sex,schoolyear FROM [dbo].[sportlist] join sport on sportlist.sportid = sport.sportid join sportlevel on sportlist.sportlevelid=sportlevel.idsportlevel join season on sportlist.seasonid =season.idseason join userinfo on sportlist.coachid=userinfo.userid join sex on sportlist.sexid = sex.sexid join schoolyear on sportlist.schoolyearid = schoolyear.schoolyearid where coachid =@userid and schoolyear.schoolyearid=@schoolyear order by season.idseason";//get sport for certain schoolyear
+                }
+
+                SqlCommand cmd = new SqlCommand(sql, conn);//sql command
+                cmd.Parameters.AddWithValue("@userid", userid);//add userid parameter
+                cmd.Parameters.AddWithValue("@schoolyear", year);//add schoolyear parameter
+                cmd.Parameters.AddWithValue("@date", date);//add schoolyear parameter
+                SqlDataReader rdr = cmd.ExecuteReader();//get the data
+                while (rdr.Read())//loop thru the datareader
+                {
+                    sportlist.Add(new sport(Convert.ToInt32(rdr["idsportlist"]), rdr["seasonname"].ToString(), rdr["sex"].ToString(), rdr["sport"].ToString(), rdr["levelname"].ToString(), new name(1, rdr["firstname"].ToString(), null, rdr["lastname"].ToString(), null, null, new DateTime())));//add to list of sport
+                }
+                rdr.Close();//close datareader
+
 
             }
-            else//if dropdown is select
-            {
-                sql = "SELECT idsportlist,sport,levelname,seasonname,firstname,lastname,sex.sex,schoolyear FROM [dbo].[sportlist] join sport on sportlist.sportid = sport.sportid join sportlevel on sportlist.sportlevelid=sportlevel.idsportlevel join season on sportlist.seasonid =season.idseason join userinfo on sportlist.coachid=userinfo.userid join sex on sportlist.sexid = sex.sexid join schoolyear on sportlist.schoolyearid = schoolyear.schoolyearid join sportuser on sportuser.sportlistid = sportlist.idsportlist where sportuser.userid =@userid and schoolyear.schoolyearid=@schoolyear order by season.idseason";//get sport for certain schoolyear
-            }
-
-            SqlCommand cmd = new SqlCommand(sql, conn);//sql command
-            cmd.Parameters.AddWithValue("@userid", userid);//add userid parameter
-            cmd.Parameters.AddWithValue("@schoolyear", year);//add schoolyear parameter
-            cmd.Parameters.AddWithValue("@date", date);//add schoolyear parameter
-            SqlDataReader rdr = cmd.ExecuteReader();//get the data
-            while (rdr.Read())//loop thru the datareader
-            {
-                sportlist.Add(new sport(Convert.ToInt32(rdr["idsportlist"]), rdr["seasonname"].ToString(), rdr["sex"].ToString(), rdr["sport"].ToString(), rdr["levelname"].ToString(), new name(1, rdr["firstname"].ToString(), null, rdr["lastname"].ToString(), null, null, new DateTime())));//add to list of sport
-            }
-            rdr.Close();//close datareader
             db.closeconn(conn);//close connection
             return sportlist;
         }
@@ -441,6 +469,22 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return assignmentid;
         }
+        public int getgrade(int userid) { 
+            db db = new db();
+            SqlConnection conn = db.openconn();
+            int studentid = 0;
+            String sql = "SELECT grade from studentinfo where studentid=@studentid";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@studentid",userid);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                studentid = Convert.ToInt32(rdr["grade"]);
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return studentid;
+        }
         public ArrayList getgradeperiod(int userid,DateTime date)
         {
             db db = new db();
@@ -636,12 +680,20 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return schoolyear;
         }
-        public bool checkifcoursesport(int schoolyearid, int userid)//check if schoolyear have course/sport
+        public bool checkifcoursesport(int type,int schoolyearid, int userid)//check if schoolyear have course/sport
         {
             db db = new db();//db object
             bool check = false;//default to false
             SqlConnection conn = db.openconn();//open conn
-            String sql = "SELECT  userid FROM [dbo].[sportlist] join sportuser on  sportlist.idsportlist = sportuser.sportlistid where schoolyearid =@schoolyearid and userid=@userid UNION select studentid from course join coursestudent on course.courseid = coursestudent.courseid where schoolyearid = @schoolyearid and studentid = @userid";//sql check for sport and course for certain sportyearid
+            String sql = "";
+            if (type == 1)
+            {
+                sql = "SELECT  userid FROM [dbo].[sportlist] join sportuser on  sportlist.idsportlist = sportuser.sportlistid where schoolyearid =@schoolyearid and userid=@userid UNION select studentid from course join coursestudent on course.courseid = coursestudent.courseid where schoolyearid = @schoolyearid and studentid = @userid";//sql check for sport and course for certain sportyearid
+            }
+            else
+            {
+                sql = "SELECT  coachid FROM [dbo].[sportlist] where schoolyearid =@schoolyearid and coachid=@userid UNION select teacherid from course where schoolyearid = @schoolyearid and teacherid = @userid";//sql check for sport and course for certain sportyearid
+            }
             SqlCommand cmd = new SqlCommand(sql, conn);//command
             cmd.Parameters.AddWithValue("@userid", userid);//userid parameter
             cmd.Parameters.AddWithValue("@schoolyearid", schoolyearid);//schoolyearid parameter
@@ -665,7 +717,7 @@ namespace SchoolsPortal.Models
             SqlDataReader rdr = cmd.ExecuteReader();//run sql statement
             while (rdr.Read())//run for each record
             {
-                if (db.checkifcoursesport(Convert.ToInt32(rdr["schoolyearid"]), userid))//check uf have course or sport info for userid and schoolyear
+                if (db.checkifcoursesport(type,Convert.ToInt32(rdr["schoolyearid"]), userid))//check uf have course or sport info for userid and schoolyear
                 {
                     if (yearid == 0)//check if yearid is 0, first load is 0 and default to current schoolyear
                     {
@@ -1004,53 +1056,91 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close conn
             return false;//return as not event available to use
         }
-        public ArrayList getevents(filterclass filter,DateTime date)//get event using the filter
+        public ArrayList getevents(int type,int userid,DateTime date)//get event using the filter
         {
             db db = new db();//db object
             ArrayList events = new ArrayList();//arraylist of the different events
             SqlConnection conn = db.openconn();//open conn
-            String sql = "SELECT * FROM ( SELECT event.eventid,event.eventtitle,event.description,event.startdate,  ROW_NUMBER() OVER(PARTITION BY event.eventid ORDER BY event.startdate) rn FROM Event join eventdisplay on event.eventid = eventdisplay.eventid join display on eventdisplay.displayid = display.displayid where districtid = @districtid and postdate<@date and startdate>=DATEADD(dd, -1, @date) AND(courseid = 0";//get event sql query
-            for (int x = 0; x < filter.getcourse().Count; x++)//loop thru courses
+            if (type == 1)
             {
-                sql = sql + " OR courseid = @course" + x;//add possible course
+                String sql = "SELECT * FROM " +
+                    "( SELECT event.eventid,event.eventtitle,event.description,event.startdate,  ROW_NUMBER() " +
+                    "OVER(PARTITION BY event.eventid ORDER BY event.startdate) rn FROM Event " +
+                    "join eventdisplay on event.eventid = eventdisplay.eventid " +
+                    "join display on eventdisplay.displayid = display.displayid " +
+                    "where (postdate<@date and startdate>=DATEADD(dd, -1, @date)) and" +
+                    "(districtid = @districtid) and " +
+                    "(schoolid = 0 or schoolid = @schoolid) and" +
+                    "(gradeid = 0 or gradeid = @gradeid) and" +
+                    "(typeid = 0 or typeid =1) and" +
+                    "(schoolyearid = 0 or schoolyearid = @schoolid) and" +
+                    "(courseid IN(select course.courseid from course join coursestudent on course.courseid = coursestudent.courseid where coursestudent.studentid = @userid) or courseid = 0) and" +
+                    "(sectionid IN(select section.sectionid from section join course on section.sectionid = course.courseid join coursestudent on course.courseid = coursestudent.courseid where coursestudent.studentid = @userid) or sectionid = 0) and" +
+                    "(teacherid IN(select teacherid from course join coursestudent on course.courseid = coursestudent.courseid where coursestudent.studentid = @userid) or teacherid = 0 )) a WHERE rn = 1 ";//more sql code
+                SqlCommand cmd = new SqlCommand(sql, conn);//command
+                cmd.Parameters.AddWithValue("@userid", userid);//add district parameter
+                cmd.Parameters.AddWithValue("@date", date);//add district parameter
+                cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type, userid));//add district parameter
+                cmd.Parameters.AddWithValue("@schoolid", db.getschool(type, userid));//add school parameter
+                cmd.Parameters.AddWithValue("@gradeid", db.getgrade(userid));//add grade 
+                SqlDataReader rdr = cmd.ExecuteReader();//datareader
+                while (rdr.Read())
+                {
+                    events.Add(new events(Convert.ToInt32(rdr["eventid"]), rdr["eventtitle"].ToString(), rdr["description"].ToString(), Convert.ToDateTime(rdr["startdate"])));//add to event list
+                }
+                rdr.Close();//close datareader
             }
-            sql = sql + ") AND(sectionid = 0";//add sectionid info
-            for (int x = 0; x < filter.getsection().Count; x++)//loop thru section
+            else
             {
-                sql = sql + " OR sectionid = @section" + x;//add possible section
+                String sql = "SELECT * FROM " +
+                    "( SELECT event.eventid,event.eventtitle,event.description,event.startdate,  ROW_NUMBER() " +
+                    "OVER(PARTITION BY event.eventid ORDER BY event.startdate) rn FROM Event " +
+                    "join eventdisplay on event.eventid = eventdisplay.eventid " +
+                    "join display on eventdisplay.displayid = display.displayid " +
+                    "where (postdate<@date and startdate>=DATEADD(dd, -1, @date)) and" +
+                    "(districtid = @districtid) and " +
+                    "(schoolid = 0 or schoolid = @schoolid) and" +
+                    "(typeid = 0 or typeid =2) and" +
+                     "(departmentid = 0 or departmentid =@department) and" +
+                    "(schoolyearid = 0 or schoolyearid = @schoolid) and" +
+                    "(courseid IN(select course.courseid from course where course.teacherid = @userid) or courseid = 0) and" +
+                    "(sectionid IN(select section.sectionid from section join course on section.sectionid = course.courseid where course.teacherid = @userid) or sectionid = 0) and" +
+                    "(teacherid = @userid or teacherid = 0 )) a WHERE rn = 1 ";//more sql code
+                SqlCommand cmd = new SqlCommand(sql, conn);//command
+                cmd.Parameters.AddWithValue("@userid", userid);//add district parameter
+                cmd.Parameters.AddWithValue("@date", date);//add district parameter
+                cmd.Parameters.AddWithValue("@department",db.getdepartmentid(userid));//add district parameter
+                cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type, userid));//add district parameter
+                cmd.Parameters.AddWithValue("@schoolid", db.getschool(type, userid));//add school parameter
+                SqlDataReader rdr = cmd.ExecuteReader();//datareader
+                while (rdr.Read())
+                {
+                    events.Add(new events(Convert.ToInt32(rdr["eventid"]), rdr["eventtitle"].ToString(), rdr["description"].ToString(), Convert.ToDateTime(rdr["startdate"])));//add to event list
+                }
+                rdr.Close();//close datareader
             }
-            sql = sql + ") AND(teacherid = 0";//add teacher info
-            for (int x = 0; x < filter.getteacher().Count; x++)//loop thru teacger
-            {
-                sql = sql + " OR teacherid = @teacher" + x;//add possible teach
-            }
-            sql = sql + ") ) a WHERE rn = 1 ";//more sql code
-            SqlCommand cmd = new SqlCommand(sql, conn);//command
-            cmd.Parameters.AddWithValue("@date", date);//add district parameter
-            cmd.Parameters.AddWithValue("@districtid", filter.getdistrict());//add district parameter
-            cmd.Parameters.AddWithValue("@schoolid", filter.getschool());//add school parameter
-            cmd.Parameters.AddWithValue("@gradeid", filter.getgrade());//add grade 
-            for (int x = 0; x < filter.getcourse().Count; x++)//add course parameter
-            {
-                cmd.Parameters.AddWithValue("@course" + x, filter.getcourse()[x]);
-            }
-            for (int x = 0; x < filter.getsection().Count; x++)//add section paraameter
-            {
-                cmd.Parameters.AddWithValue("@section" + x, filter.getsection()[x]);
-            }
-            for (int x = 0; x < filter.getteacher().Count; x++)//add teacher parameter
-            {
-                cmd.Parameters.AddWithValue("@teacher" + x, filter.getteacher()[x]);
-            }
-            SqlDataReader rdr = cmd.ExecuteReader();//datareader
-            while (rdr.Read())
-            {
-                events.Add(new events(Convert.ToInt32(rdr["eventid"]), rdr["eventtitle"].ToString(), rdr["description"].ToString(), Convert.ToDateTime(rdr["startdate"])));//add to event list
-            }
-            rdr.Close();//close datareader
             db.closeconn(conn);//close conn
             return events;//return list of event
         }
+
+        private int getdepartmentid(int userid)
+        {
+            db db = new db();//db class
+            SqlConnection conn = db.openconn();//open conn
+            int department = 0;//set hash to blank
+            String sql = "SELECT department FROM [dbo].[staffinfo] where staffid=@userid";//query to get the hash value
+            SqlCommand cmd = new SqlCommand(sql, conn);//setup command
+            cmd.Parameters.AddWithValue("@userid", userid);//setting parameter
+            SqlDataReader rdr = cmd.ExecuteReader();//run query
+            if (rdr.Read())//read first entry if available
+            {
+                department = Convert.ToInt32(rdr[0]);//setting hash variable
+            }
+            rdr.Close();//close datareader
+            db.closeconn(conn);//close connection
+            return department;//return hash value
+        }
+
         public events getsingleevents(int eventid)
         {
             db db = new db();
