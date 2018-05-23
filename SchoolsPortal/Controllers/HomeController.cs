@@ -89,7 +89,7 @@ namespace SchoolsPortal.Controllers
             }        
             ViewBag.schoolday = course;
             ViewBag.schoolyear = db.getschoolyear(((user)Session["user"]).getuserinfo().getusertype(),schoolyear, ((user)Session["user"]).getusercred().getuserid());//get the list of school year
-            ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get filter for event and newstories
+            //ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get filter for event and newstories
             ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());//get all message for the user
             ViewBag.events = db.getevents(((user)Session["user"]).getuserinfo().getusertype(), ((user)Session["user"]).getusercred().getuserid(), DateTime.Now);//get all the different 
             ViewBag.newstories = db.getnewstories(((user)Session["user"]).getuserinfo().getusertype(), ((user)Session["user"]).getusercred().getuserid(), DateTime.Now);//get all the new stories
@@ -109,14 +109,19 @@ namespace SchoolsPortal.Controllers
                         ViewBag.students = list;
                     }
                     decimal finalgrade = 0;
-                    for (int y = 0; y < ViewBag.students.Count; y++)
+                    if (db.checkifgraded(ViewBag.courses[x].getcourseid()))
                     {
-                    int userid = ViewBag.students[y];
-
-                        finalgrade = finalgrade+a.finalcalcgrade(((user)Session["user"]).getuserinfo().getusertype(), ViewBag.courses[x].getcourseid(), userid);//calc final grade for spec course
-                        
+                        for (int y = 0; y < ViewBag.students.Count; y++)
+                        {
+                            int userid = ViewBag.students[y];
+                            finalgrade = finalgrade + a.finalcalcgrade(((user)Session["user"]).getuserinfo().getusertype(), ViewBag.courses[x].getcourseid(), userid);//calc final grade for spec course                       
+                        }
+                        (ViewBag.courses[x]).setgrade(Math.Round(finalgrade / ViewBag.students.Count * 100));//set the final grade
                     }
-                    (ViewBag.courses[x]).setgrade(Math.Round(finalgrade/ ViewBag.students.Count * 100));//set the final grade
+                    else
+                    {
+                    (ViewBag.courses[x]).setgrade(-1);
+                }
                 }
         }
     }

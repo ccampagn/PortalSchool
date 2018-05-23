@@ -16,7 +16,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;//conn variable
             string myConnectionString;//conn string
-           
+            
             conn = new SqlConnection();//create new conn
             conn.ConnectionString = myConnectionString;//setting conn
             conn.Open();//open conn to the db
@@ -87,7 +87,28 @@ namespace SchoolsPortal.Models
             return sportlist;
         }
 
-       
+        public bool checkifgraded(int courseid)
+        {
+            db db = new db();//db object
+            SqlConnection conn = db.openconn();//open conn
+            String sql = "SELECT gradingsystem FROM [dbo].[course] where courseid =@courseid";//check if in course
+            SqlCommand cmd = new SqlCommand(sql, conn);//run sql command
+            cmd.Parameters.AddWithValue("@courseid", courseid);//set courseid parameter
+            SqlDataReader rdr = cmd.ExecuteReader();//data reader
+            if (rdr.Read())//check if can read result
+            {
+                if (Convert.ToInt32(rdr["gradingsystem"]) == 0)
+                {
+                    return false;
+                } else
+                {
+                    return true;
+                }
+            }
+            rdr.Close();//close datareader
+            db.closeconn(conn);//close conn
+            return false;//return if in course of not
+        }
 
         public ArrayList getsportresult(int sportlistid)
         {
@@ -1432,6 +1453,7 @@ namespace SchoolsPortal.Models
         }
         #endregion
         #region filter
+        
         public filterclass getfilterinfo(int student,DateTime date)//get filter values for student using their studentid number
         {
             db db = new db();//db object
@@ -1462,15 +1484,6 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close conn
             return filter;//return filter object
         }
-        #endregion
-        
-
-        
-
-        
-
-        
-
-       
+        #endregion        
     }
 }

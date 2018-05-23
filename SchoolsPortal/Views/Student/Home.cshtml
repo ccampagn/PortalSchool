@@ -110,7 +110,14 @@
                                     <td>@p.getsectioncode()</td>
                                     <td><a href="/courses?coursesid=@p.getcourseid()">@p.getcoursename()</a></td>
                                     <td>@p.getteacher().getfirstname() @p.getteacher().getlastname()</td>
-                                    <td>@p.getgrade()</td>
+                                        @if (p.getgrade() != -1)
+                                        {
+                                            <td>@p.getgrade()</td>
+                                        }
+                                        else
+                                        {
+                                            <td>N/A</td>
+                                        }
                                 </tr>
                             }
                         </table>
