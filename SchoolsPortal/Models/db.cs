@@ -16,7 +16,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;//conn variable
             string myConnectionString;//conn string
-            
+           
             conn = new SqlConnection();//create new conn
             conn.ConnectionString = myConnectionString;//setting conn
             conn.Open();//open conn to the db
@@ -265,7 +265,7 @@ namespace SchoolsPortal.Models
             SqlConnection conn = db.openconn();
             if (type == 1)
             {
-                string sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,lastname,classroomname,periodstart,periodend from  course  join section on section.sectionid = course.sectionid join coursestudent on course.courseid = coursestudent.courseid join courseperiod on course.courseid = courseperiod.courseid join period on courseperiod.periodid = period.periodid join daytype on daytype.daytypeid = period.typedayid  join type on type.typeid = daytype.scheduletypeid join userinfo on userinfo.userid = course.teacherid join classroom on classroom.classroomid = period.classroomid  join department on section.department = department.departmentid where typeid=@typeid and studentid =@userid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek)) order by periodstart";
+                string sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,lastname,classroomname,periodstart,periodend from  course  join section on section.sectionid = course.sectionid join coursestudent on course.courseid = coursestudent.courseid join courseperiod on course.courseid = courseperiod.courseid join period on courseperiod.periodid = period.periodid join daytype on daytype.daytypeid = period.typedayid  join type on type.typeid = daytype.scheduletypeid join userinfo on userinfo.userid = course.teacherid join classroom on classroom.classroomid = courseperiod.classroomid  join department on section.department = department.departmentid where typeid=@typeid and studentid =@userid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek)) order by periodstart";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@typeid", db.gettypeid(type,userid, now));
                 cmd.Parameters.AddWithValue("@dateofweek", (int)now.DayOfWeek);
@@ -281,7 +281,7 @@ namespace SchoolsPortal.Models
             else
             {
                 int schoolid = db.getschool(type, userid);
-                string sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,classroomname,periodstart,periodend from  course  join section on section.sectionid = course.sectionid  join courseperiod on course.courseid = courseperiod.courseid join period on courseperiod.periodid = period.periodid join daytype on daytype.daytypeid = period.typedayid  join type on type.typeid = daytype.scheduletypeid join classroom on classroom.classroomid = period.classroomid  join department on section.department = department.departmentid where typeid=@typeid and teacherid =@userid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek)) order by periodstart";
+                string sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,classroomname,periodstart,periodend from  course  join section on section.sectionid = course.sectionid  join courseperiod on course.courseid = courseperiod.courseid join period on courseperiod.periodid = period.periodid join daytype on daytype.daytypeid = period.typedayid  join type on type.typeid = daytype.scheduletypeid join classroom on classroom.classroomid = courseperiod.classroomid  join department on section.department = department.departmentid where typeid=@typeid and teacherid =@userid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek)) order by periodstart";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@typeid", db.gettypeid(type,userid, now));
                 cmd.Parameters.AddWithValue("@dateofweek", (int)now.DayOfWeek);

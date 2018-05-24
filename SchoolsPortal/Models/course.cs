@@ -143,7 +143,10 @@ namespace SchoolsPortal.Models
                 }
 
             }
-
+            if (finalgrade == 0)
+            {
+                return 0;
+            }
             return percenttotal / finalgrade;//get final grade by div percenttotal by finalgrade
         }
         public decimal finalcalcgrade(int type,int course, int userid)//method calc 
