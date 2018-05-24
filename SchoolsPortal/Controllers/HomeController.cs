@@ -116,7 +116,14 @@ namespace SchoolsPortal.Controllers
                             int userid = ViewBag.students[y];
                             finalgrade = finalgrade + a.finalcalcgrade(((user)Session["user"]).getuserinfo().getusertype(), ViewBag.courses[x].getcourseid(), userid);//calc final grade for spec course                       
                         }
-                        (ViewBag.courses[x]).setgrade(Math.Round(finalgrade / ViewBag.students.Count * 100));//set the final grade
+                        if (ViewBag.students.Count != 0)
+                        {
+                            (ViewBag.courses[x]).setgrade(Math.Round(finalgrade / ViewBag.students.Count * 100));//set the final grade
+                        }
+                        else
+                        {
+                        (ViewBag.courses[x]).setgrade(-1);
+                        }
                     }
                     else
                     {
