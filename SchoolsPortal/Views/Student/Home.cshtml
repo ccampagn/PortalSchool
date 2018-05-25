@@ -100,7 +100,14 @@
                                 <th>Section Number</th>
                                 <th>Course Name</th>
                                 <th>Teacher Name</th>
+                                @if (@ViewBag.type == 1)
+                                {
                                 <th>Grade</th>
+                                }
+                                else
+                                {
+                                <th>Average Grade</th>
+                                }
                             </tr>
                             @foreach (dynamic p in (ViewBag.courses))
                             {

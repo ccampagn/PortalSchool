@@ -16,7 +16,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;//conn variable
             string myConnectionString;//conn string
-            
+           
             conn = new SqlConnection();//create new conn
             conn.ConnectionString = myConnectionString;//setting conn
             conn.Open();//open conn to the db
@@ -245,7 +245,7 @@ namespace SchoolsPortal.Models
             db db = new db();//db object
             bool incheck = false;//default to not in course
             SqlConnection conn = db.openconn();//open conn
-            String sql = "SELECT * FROM [dbo].[coursestudent] where studentid=@userid and courseid =@courseid";//check if in course
+            String sql = "SELECT * FROM [dbo].[coursestudent] join course on course.courseid = coursestudent.courseid where (teacherid=@userid or studentid=@userid) and course.courseid =@courseid";//check if in course
             SqlCommand cmd = new SqlCommand(sql, conn);//run sql command
             cmd.Parameters.AddWithValue("@userid", userid);//set userid parameter
             cmd.Parameters.AddWithValue("@courseid", coursesid);//set courseid parameter
@@ -549,16 +549,30 @@ namespace SchoolsPortal.Models
             db db = new db();   //declare db object
             List<assignment> assignmnet = new List<assignment>();//list of the assignment
             SqlConnection conn = db.openconn(); //conn to db
-            String sql = "SELECT assignment.assignmentid,title,assignment.description,postdate,duedate,ISNULL(assignmentscorers.scores,-1) as scores,points,assignmentcategory.categoryname,CASE WHEN assignmentcategory.inquarter=0 THEN categoryname ELSE periodname END as periodname,ISNULL(testsid,0) as testsid  FROM [dbo].[assignment] left join assignmentscorers on assignment.assignmentid = assignmentscorers.assignmentid join assignmentcategory on assignment.category = assignmentcategory.assignmentcategoryid  join course on course.courseid =assignment.sectionid join section on section.sectionid = course.sectionid join gradingperiod on course.schoolyearid = gradingperiod.schoolyearid left join tests on tests.assignmentid = assignment.assignmentid where schoolid=@schoolid and assignment.sectionid = @assignmentid and (assignmentscorers.userid = @userid OR assignmentscorers.userid is NULL) and postdate<@date and duedate>gradingperiod.startdate and duedate<gradingperiod.enddate order by duedate";//sql the get all assignment,-1 for score if no score,quarter,also if have test 
+            String sql = "SELECT assignment.assignmentid,title,assignment.description,postdate,duedate,ISNULL(assignmentscorers.scores,-1) as scores,points,assignmentcategory.categoryname,CASE WHEN assignmentcategory.inquarter=0 THEN categoryname ELSE periodname END as periodname,ISNULL(testsid,0) as testsid  FROM [dbo].[assignment] left join assignmentscorers on assignment.assignmentid = assignmentscorers.assignmentid join assignmentcategory on assignment.category = assignmentcategory.assignmentcategoryid  join course on course.courseid =assignment.sectionid join section on section.sectionid = course.sectionid join gradingperiod on course.schoolyearid = gradingperiod.schoolyearid left join tests on tests.assignmentid = assignment.assignmentid where schoolid=@schoolid and assignment.sectionid = @assignmentid and (assignmentscorers.userid = @userid OR assignmentscorers.userid is NULL) and postdate<@date and duedate>gradingperiod.startdate and duedate<gradingperiod.enddate order by duedate";
+            if(type == 2)
+            {
+                sql = "SELECT assignment.assignmentid,title,assignment.description,postdate,duedate,ISNULL(AVG(assignmentscorers.scores),0) as scores,points,assignmentcategory.categoryname,CASE WHEN assignmentcategory.inquarter=0 THEN categoryname ELSE periodname END as periodname FROM [dbo].[assignment] left join assignmentscorers on assignment.assignmentid = assignmentscorers.assignmentid join assignmentcategory on assignment.category = assignmentcategory.assignmentcategoryid  join course on course.courseid =assignment.sectionid join section on section.sectionid = course.sectionid join gradingperiod on course.schoolyearid = gradingperiod.schoolyearid where schoolid=@schoolid and assignment.sectionid =@assignmentid  and postdate<@date and duedate>gradingperiod.startdate and duedate<gradingperiod.enddate  group by assignment.assignmentid,assignment.title,assignment.description,assignmentcategory.categoryname,assignmentcategory.inquarter,gradingperiod.periodname,postdate,duedate,points";
+            }
             SqlCommand cmd = new SqlCommand(sql, conn);//setup commend
-            cmd.Parameters.AddWithValue("@assignmentid", assignmentid); //setting the courseid
-            cmd.Parameters.AddWithValue("@userid", userid);             //setting the userid
+            if(type == 1)
+            {
+                cmd.Parameters.AddWithValue("@userid", userid);             //setting the userid
+            }
+            cmd.Parameters.AddWithValue("@assignmentid", assignmentid); //setting the courseid            
             cmd.Parameters.AddWithValue("@schoolid", db.getschool(type,userid));
             cmd.Parameters.AddWithValue("@date", date);
             SqlDataReader rdr = cmd.ExecuteReader();//datareader
             while (rdr.Read())//read result
             {
-                assignmnet.Add(new assignment(Convert.ToInt32(rdr["assignmentid"]), rdr["title"].ToString(), rdr["periodname"].ToString(), Convert.ToDateTime(rdr["postdate"]), Convert.ToDateTime(rdr["duedate"]), Convert.ToInt32(rdr["points"]), Convert.ToInt32(rdr["scores"]), rdr["categoryname"].ToString(), Convert.ToInt32(rdr["testsid"]), db.testvalid(Convert.ToInt32(rdr["testsid"]))));//add to assignment
+                if (type == 1)
+                {
+                    assignmnet.Add(new assignment(Convert.ToInt32(rdr["assignmentid"]), rdr["title"].ToString(), rdr["periodname"].ToString(), Convert.ToDateTime(rdr["postdate"]), Convert.ToDateTime(rdr["duedate"]), Convert.ToInt32(rdr["points"]), Convert.ToInt32(rdr["scores"]), rdr["categoryname"].ToString(), Convert.ToInt32(rdr["testsid"]), db.testvalid(Convert.ToInt32(rdr["testsid"]))));//add to assignment
+                }
+                else
+                {
+                    assignmnet.Add(new assignment(Convert.ToInt32(rdr["assignmentid"]), rdr["title"].ToString(), rdr["periodname"].ToString(), Convert.ToDateTime(rdr["postdate"]), Convert.ToDateTime(rdr["duedate"]), Convert.ToInt32(rdr["points"]), Convert.ToInt32(rdr["scores"]), rdr["categoryname"].ToString(), 0, 0));//add to assignment
+                }
             }
             rdr.Close();//close result
             db.closeconn(conn);//close conn
