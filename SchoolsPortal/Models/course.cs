@@ -97,11 +97,11 @@ namespace SchoolsPortal.Models
                 {
                     if (gradedisplay[x].gettype() == 1)//differentquarter
                     {
-                        gradedisplay[x].setpercent(db.getpercentgrade(userid, course, gradedisplay[x].getgradedisplayid(),DateTime.Now));//set grade for certain quarter
+                        gradedisplay[x].setpercent(db.getpercentgrade(type,userid, course, gradedisplay[x].getgradedisplayid(),DateTime.Now));//set grade for certain quarter
                     }
                     if (gradedisplay[x].gettype() == 2)//assignmengt not part of quarter
                     { 
-                        gradedisplay[x].setpercent(db.getpercentgradecategory(userid, course, gradedisplay[x].getgradedisplayid(),DateTime.Now));//set grade for certain special assignment that are not part of a quarter
+                        gradedisplay[x].setpercent(db.getpercentgradecategory(type,userid, course, gradedisplay[x].getgradedisplayid(),DateTime.Now));//set grade for certain special assignment that are not part of a quarter
                     }
                 }
             }
@@ -115,14 +115,14 @@ namespace SchoolsPortal.Models
                     {
                         foreach (dynamic s in (category))//loop thru the different category
                         {
-                            point = point + (s.getgradepercent() * db.getcategoriesgrade(course, userid, p.getgradedisplayid(), s.getcategoryid(),DateTime.Now));
+                            point = point + (s.getgradepercent() * db.getcategoriesgrade(type,course, userid, p.getgradedisplayid(), s.getcategoryid(),DateTime.Now));
                         }
                         p.setpercent(point);//set percent
                         point = 0;//reset percent to 0
                     }
                     if (p.gettype() == 2)////check if special assignment
                     {
-                        p.setpercent(db.getpercentgradecategory(userid, course, p.getgradedisplayid(),DateTime.Now));//set grade for special assignment
+                        p.setpercent(db.getpercentgradecategory(type,userid, course, p.getgradedisplayid(),DateTime.Now));//set grade for special assignment
                     }
                 }
             }

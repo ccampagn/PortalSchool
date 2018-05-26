@@ -16,7 +16,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;//conn variable
             string myConnectionString;//conn string
-           
+            
             conn = new SqlConnection();//create new conn
             conn.ConnectionString = myConnectionString;//setting conn
             conn.Open();//open conn to the db
@@ -614,14 +614,21 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close conn
             return type;//return course grade type
         }
-        public decimal getpercentgrade(int userid, int courseid, int gradingperiod,DateTime date)//get grade for grading period
+        public decimal getpercentgrade(int type,int userid, int courseid, int gradingperiod,DateTime date)//get grade for grading period
         {
             db db = new db();//db object
             decimal percent = 0;//default percent 0
             SqlConnection conn = db.openconn();//open conn
             String sql = "SELECT isnull(sum(Scores)/sum(points),-1)  as grade FROM [dbo].[assignment] left join assignmentscorers on assignment.assignmentid = assignmentscorers.assignmentid join assignmentcategory on assignment.category = assignmentcategory.assignmentcategoryid  join course on course.courseid =assignment.sectionid join gradingperiod on course.schoolyearid = gradingperiod.schoolyearid where assignment.sectionid = @courseid and (assignmentscorers.userid = @userid OR assignmentscorers.userid is NULL) and postdate<@date and duedate>gradingperiod.startdate and duedate<gradingperiod.enddate and gradingperiod.gradingperiodid=@gradeperiod and inquarter=1";//sql query get grade for quarter
+            if(type == 2)
+            {
+                sql = "SELECT isnull(avg(Scores/points),0)  as grade FROM [dbo].[assignment] left join assignmentscorers on assignment.assignmentid = assignmentscorers.assignmentid join assignmentcategory on assignment.category = assignmentcategory.assignmentcategoryid  join course on course.courseid =assignment.sectionid join gradingperiod on course.schoolyearid = gradingperiod.schoolyearid where assignment.sectionid = @courseid  and postdate<@date and duedate>gradingperiod.startdate and duedate<gradingperiod.enddate and gradingperiod.gradingperiodid=@gradeperiod and inquarter=1";
+            }
             SqlCommand cmd = new SqlCommand(sql, conn);//command
-            cmd.Parameters.AddWithValue("@userid", userid);//set userid parameter
+            if (type == 1)
+            {
+                cmd.Parameters.AddWithValue("@userid", userid);//set userid parameter
+            }
             cmd.Parameters.AddWithValue("@courseid", courseid);//set courseid parameter
             cmd.Parameters.AddWithValue("@gradeperiod", gradingperiod);//set 
             cmd.Parameters.AddWithValue("@date", date);//set 
@@ -635,14 +642,21 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close conn
             return percent;//return percent as grade
         }
-        public decimal getpercentgradecategory(int userid, int courseid, int category,DateTime date)//get special assisnment grade
+        public decimal getpercentgradecategory(int type,int userid, int courseid, int category,DateTime date)//get special assisnment grade
         {
             db db = new db();//db object
             decimal percent = 0;//default percent
             SqlConnection conn = db.openconn();//open conn
             String sql = "SELECT ISNULL(sum(scores/points),-1) as grade FROM [dbo].[assignment] left join assignmentscorers on assignment.assignmentid = assignmentscorers.assignmentid join assignmentcategory on assignment.category = assignmentcategory.assignmentcategoryid  join course on course.courseid =assignment.sectionid  where assignment.sectionid = @courseid and (assignmentscorers.userid = @userid OR assignmentscorers.userid is NULL) and postdate<@date  and inquarter=0 and assignmentcategory.assignmentcategoryid=@category";//sql query to get special category grade
+            if (type == 2)
+            {
+                sql = "SELECT ISNULL(avg(scores / points), 0) as grade FROM[dbo].[assignment] left join assignmentscorers on assignment.assignmentid = assignmentscorers.assignmentid join assignmentcategory on assignment.category = assignmentcategory.assignmentcategoryid  join course on course.courseid = assignment.sectionid  where assignment.sectionid = @courseid  and postdate<@date  and inquarter = 0 and assignmentcategory.assignmentcategoryid = @category";
+            }
             SqlCommand cmd = new SqlCommand(sql, conn);//command
-            cmd.Parameters.AddWithValue("@userid", userid);//setup userid parameter
+            if (type == 1)
+            {
+                cmd.Parameters.AddWithValue("@userid", userid);//setup userid parameter
+            }
             cmd.Parameters.AddWithValue("@courseid", courseid);//setup courseid parameter
             cmd.Parameters.AddWithValue("@category", category);//setup category parameter
             cmd.Parameters.AddWithValue("@date", date);//setup category parameter
@@ -673,14 +687,21 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);//close db conn
             return category;//return list of different categorygrade
         }
-        public decimal getcategoriesgrade(int course, int user, int gradeperiod, int category,DateTime date)//get grade for certain categories within gradeperiod
+        public decimal getcategoriesgrade(int type,int course, int user, int gradeperiod, int category,DateTime date)//get grade for certain categories within gradeperiod
         {
             db db = new db();//db object
             decimal percent = 0;//default percent to 0
             SqlConnection conn = db.openconn();//db open conn
             String sql = "SELECT ISNULL(sum(Scores)/sum(points),-1) as grade  FROM [dbo].[assignment] left join assignmentscorers on assignment.assignmentid = assignmentscorers.assignmentid join assignmentcategory on assignment.category = assignmentcategory.assignmentcategoryid  join course on course.courseid =assignment.sectionid join gradingperiod on course.schoolyearid = gradingperiod.schoolyearid where assignment.sectionid = @course and (assignmentscorers.userid = @user OR assignmentscorers.userid is NULL) and postdate<@date and duedate>gradingperiod.startdate and duedate<gradingperiod.enddate and gradingperiod.gradingperiodid=@gradeperiod and inquarter=1 and assignmentcategoryid =@category";//query get grade for certain categories
+            if (type ==2)
+            {
+                sql = "SELECT ISNULL(avg(Scores/points),0) as grade  FROM [dbo].[assignment] left join assignmentscorers on assignment.assignmentid = assignmentscorers.assignmentid join assignmentcategory on assignment.category = assignmentcategory.assignmentcategoryid  join course on course.courseid =assignment.sectionid join gradingperiod on course.schoolyearid = gradingperiod.schoolyearid where assignment.sectionid = @course  and postdate<@date and duedate>gradingperiod.startdate and duedate<gradingperiod.enddate and gradingperiod.gradingperiodid=@gradeperiod and inquarter=1 and assignmentcategoryid =@category";
+            }
             SqlCommand cmd = new SqlCommand(sql, conn);//command
-            cmd.Parameters.AddWithValue("@user", user);//setup user parameter
+            if(type == 1)
+            {
+                cmd.Parameters.AddWithValue("@user", user);//setup user parameter
+            }            
             cmd.Parameters.AddWithValue("@course", course);//setup course parameter
             cmd.Parameters.AddWithValue("@gradeperiod", gradeperiod);//setup gradeperiod parameter
             cmd.Parameters.AddWithValue("@category", category);//setup category parameter
