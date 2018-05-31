@@ -89,13 +89,12 @@ namespace SchoolsPortal.Controllers
             }        
             ViewBag.schoolday = course;
             ViewBag.schoolyear = db.getschoolyear(((user)Session["user"]).getuserinfo().getusertype(),schoolyear, ((user)Session["user"]).getusercred().getuserid());//get the list of school year
-            //ViewBag.filter = db.getfilterinfo(((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get filter for event and newstories
             ViewBag.message = db.getmessage(((user)Session["user"]).getusercred().getuserid());//get all message for the user
             ViewBag.events = db.getevents(((user)Session["user"]).getuserinfo().getusertype(), ((user)Session["user"]).getusercred().getuserid(), DateTime.Now);//get all the different 
             ViewBag.newstories = db.getnewstories(((user)Session["user"]).getuserinfo().getusertype(), ((user)Session["user"]).getusercred().getuserid(), DateTime.Now);//get all the new stories
             ViewBag.sport = db.getsportlist(((user)Session["user"]).getuserinfo().getusertype(),((user)Session["user"]).getusercred().getuserid(),schoolyear,DateTime.Now);//get the list of the different sport
             ViewBag.courses = db.getcourse(((user)Session["user"]).getuserinfo().getusertype(),((user)Session["user"]).getusercred().getuserid(),schoolyear,DateTime.Now);//get list of courses for current year
-           course a = new course();//new course all to call method for grade
+            course a = new course();//new course all to call method for grade
                 for (int x = 0; x < ViewBag.courses.Count; x++)//loop thru all the different course in the list
                 {
                     if (((user)Session["user"]).getuserinfo().getusertype() == 2)

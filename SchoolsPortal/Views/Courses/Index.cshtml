@@ -28,30 +28,30 @@
         <table id="tables">
             <tr>
                 @foreach (dynamic p in (ViewBag.displaygrade))
-            {
+                {
                 <th>@p.getcategorytitle()</th>
-        }
+                }
                 <th>Final Grade</th>
             </tr>
             <tr>
                 @foreach (dynamic p in (ViewBag.displaygrade))
-            {
-                if (@p.getpercent() == -1)
                 {
-                    <td>N/A</td>
-            }
-            else
-            {
-                <td>@(Math.Round(p.getpercent() * 100))</td>
-        }
-    }
+                    if (@p.getpercent() == -1)
+                    {
+                        <td>N/A</td>
+                    }
+                    else
+                    {
+                        <td>@(Math.Round(p.getpercent() * 100))</td>
+                    }
+                }
                 <td>@(Math.Round(ViewBag.finalgrade * 100))</td>
             </tr>
         </table>
-        </div>
-        <br />
-        <div id="homepage">
-            <div id="assignment">
+      </div>
+      <br />
+      <div id="homepage">
+         <div id="assignment">
                 <table id="tables">
                     <tr>
                         <th>Date</th>
@@ -63,89 +63,104 @@
                         <th>Percentage</th>
                     </tr>
                     @foreach (dynamic p in (ViewBag.assignment))
-            {
-                <tr>
-                    <td>@p.getduedate().ToShortDateString()</td>
-                    <td>@p.gettitle()</td>
-                    <td>@p.getgradingperiod()</td>
-                    <td>@p.getcategory()</td>
-                    @if (p.getpoints() == -1)
-            {
-                if (p.gettestsid() != 0 && p.getteststatus() == 0)
-                {
-                    <td>
-                        <form action="/Courses/Test" method="post">
-                            <input id="testsid" name="testsid" type="hidden" value="@p.gettestsid()" />
-                            <input value="Take Test" type="submit" />
-                        </form>
-                    </td>
-        }
-        else
-        {
-            <td>-</td>
-}
-}
-else
-{
-        <td>@p.getpoints()</td>
-}
-                    <td>@p.getscores()</td>
-                    @if (p.getpoints() == -1)
-            {
-
-                <td>-</td>
-    }
-    else
-    {
-        <td>@(p.getpoints() / p.getscores() * 100)%</td>
-}
-                </tr>
-    }
+                    {
+                        <tr>
+                        <td>@p.getduedate().ToShortDateString()</td>
+                        <td>@p.gettitle()</td>
+                        <td>@p.getgradingperiod()</td>
+                        <td>@p.getcategory()</td>
+                        @if (p.getpoints() == -1)
+                        {
+                            if (p.gettestsid() != 0 && p.getteststatus() == 0)
+                            {
+                                <td>
+                                <form action="/Courses/Test" method="post">
+                                <input id="testsid" name="testsid" type="hidden" value="@p.gettestsid()" />
+                                <input value="Take Test" type="submit" />
+                                </form>
+                                </td>
+                            }
+                            else
+                            {
+                            <td>-</td>
+                            }
+                        }
+                        else
+                        {
+                            <td>@p.getpoints()</td>
+                        }
+                        <td>@p.getscores()</td>
+                        @if (p.getpoints() == -1)
+                        {
+                            <td>-</td>
+                        }
+                        else
+                        {
+                            <td>@(p.getpoints() / p.getscores() * 100)%</td>
+                        }
+                        </tr>
+                     }
                 </table>
             </div>
-            <div id="messageboard">
-                <table id="tables">
-                    <tr>
-                        <th colspan="2">Message Board</th>
-                    </tr>
-                    <tr>
-                        <th>Message</th>
-                        <th>From</th>
-                    </tr>
-                    @foreach (dynamic p in (ViewBag.messageboard))
-    {
-                <tr>
-                    <td>@p.getmessage()</td>
-                    <td>@p.getname().getfirstname() @p.getname().getlastname()</td>
-                </tr>
+         <div>
+             @if (@ViewBag.type == 2)
+             {
+             <div id="coursegrade">
+                 <table id="tables">
+                     <tr>
+                         <th colspan="2">Students</th>
+                     </tr>
+                     <tr>
+                         <th>Student Name</th>
+                         <th>Final Grade</th>
+                     </tr>
+                     @foreach (dynamic p in (ViewBag.studentlist))
+                     {
+             <tr>
+                 <td>@p.getname().getfirstname() @p.getname().getlastname()</td>
+                 <td>@p.getgrade()</td>
+             </tr>
+                     }
+                 </table>
+             </div>
+             }
+             <div id="messageboard">
+                 <table id="tables">
+                     <tr>
+                         <th colspan="2">Message Board</th>
+                     </tr>
+                     <tr>
+                         <th>Message</th>
+                         <th>From</th>
+                     </tr>
+                     @foreach (dynamic p in (ViewBag.messageboard))
+            {
+             <tr>
+                 <td>@p.getmessage()</td>
+                 <td>@p.getname().getfirstname() @p.getname().getlastname()</td>
+             </tr>
 }
-                </table>
-                <script src="~/Scripts/jquery-1.10.2.js"></script>
-                <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
-                <div id="divEmp">
-
-
-                    @using (Ajax.BeginForm("MessageMaster", "Courses", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "divEmp" }))
-        {
-            @Html.AntiForgeryToken()
-
-            <div class="form-horizontal">
-
-                <hr />
-                Message: @Html.TextBox("text")
-                <input type="submit" value="Post" class="btn btn-primary" />
-                <hr />
-
-
-
-            </div>
+                 </table>
+                 <script src="~/Scripts/jquery-1.10.2.js"></script>
+                 <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+                 <div id="divEmp">
+                     @using (Ajax.BeginForm("MessageMaster", "Courses", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "divEmp" }))
+            {
+             @Html.AntiForgeryToken()
+             <div class="form-horizontal">
+                 <hr />
+                 Message: @Html.TextBox("text")
+                 <input type="submit" value="Post" class="btn btn-primary" />
+                 <hr />
+             </div>
 }
-                </div>
-                <script src="~/Scripts/jquery.validate.min.js"></script>
-                <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
-            </div>
+                 </div>
+                 <script src="~/Scripts/jquery.validate.min.js"></script>
+                 <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+             </div>
+         </div>
         </div>
-        </div>
-        </div>
+    </div>
+</div>
 </body>
 </html>

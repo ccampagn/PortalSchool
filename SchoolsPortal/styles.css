@@ -15,6 +15,12 @@
     min-width: 600px;
     margin: 10px 10px 10px 10px;
 }
+#coursegrade {
+    width: 45%;
+    float: left;
+    min-width: 600px;
+    margin: 10px 10px 10px 10px;
+}
 #testsassignment {
     min-width: 600px;
     margin-left: 15%;

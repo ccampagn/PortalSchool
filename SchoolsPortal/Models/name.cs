@@ -25,6 +25,10 @@ namespace SchoolsPortal.Models
             this.sex = sex;
             this.birthofdate = birthofdate;
         }
+        public int getnameid()
+        {
+            return nameid;
+        }
         public string getfirstname()
         {
             return firstname;

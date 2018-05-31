@@ -77,8 +77,19 @@ namespace SchoolsPortal.Controllers
             db db = new db();//create db object
             if (db.checkinclass(coursesid, ((user)Session["user"]).getusercred().getuserid())) {//class to make sure user have access to this page
                 Session["courseid"] = coursesid;
+                ViewBag.type = ((user)Session["user"]).getuserinfo().getusertype();
                 ViewBag.assignment = db.getallasignment(((user)Session["user"]).getuserinfo().getusertype(), coursesid, ((user)Session["user"]).getusercred().getuserid(),DateTime.Now);//get list of all the different assignment
                 course a = new course();//create course object
+                if (((user)Session["user"]).getuserinfo().getusertype()==2)
+                {
+                    ArrayList studentlist= db.getstudentlist(coursesid);
+                    for(int x = 0; x < studentlist.Count; x++)
+                    {
+                        ((studentlist)studentlist[x]).setgrade(a.finalcalcgrade(1, coursesid, ((studentlist)studentlist[x]).getname().getnameid()));                          
+                    }
+                    ViewBag.studentlist = studentlist;
+                }
+                
                 ViewBag.displaygrade = a.calcdisplaygrade(((user)Session["user"]).getuserinfo().getusertype(),coursesid, ((user)Session["user"]).getusercred().getuserid());//calc display grade for all the different categories
                 ViewBag.finalgrade = a.calcgradedisplay(ViewBag.displaygrade);//calc the final grade
                 ViewBag.messageboard = db.getmessageboard(coursesid);//get message board based on the courseid

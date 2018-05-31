@@ -16,7 +16,7 @@ namespace SchoolsPortal.Models
         {
             SqlConnection conn;//conn variable
             string myConnectionString;//conn string
-           
+            
             conn = new SqlConnection();//create new conn
             conn.ConnectionString = myConnectionString;//setting conn
             conn.Open();//open conn to the db
@@ -220,7 +220,25 @@ namespace SchoolsPortal.Models
             db.closeconn(conn);
             return list;
         }
-        
+
+        public ArrayList getstudentlist(int courseid)
+        {
+            db db = new db();
+            ArrayList list = new ArrayList();
+            SqlConnection conn = db.openconn();
+            String sql = "select studentid,firstname,middlename,lastname,suffix,sex,dateofbirth from course join coursestudent on course.courseid = coursestudent.courseid join userinfo on userid=studentid where course.courseid=@courseid";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@courseid",courseid);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(new studentlist(new name(Convert.ToInt32(rdr["studentid"]), rdr["firstname"].ToString(), rdr["middlename"].ToString(), rdr["lastname"].ToString(), rdr["suffix"].ToString(), rdr["sex"].ToString(), Convert.ToDateTime(rdr["dateofbirth"])), 0));
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return list;
+        }
+
         public List<reportcarddisplay> getcourseid(int schoolyearid, int studentid)
         {
             db db = new db();
@@ -268,7 +286,7 @@ namespace SchoolsPortal.Models
                 string sql = "SELECT course.courseid,department.department,coursenumber,sectionnumber,coursename,description,firstname,lastname,classroomname,periodstart,periodend from  course  join section on section.sectionid = course.sectionid join coursestudent on course.courseid = coursestudent.courseid join courseperiod on course.courseid = courseperiod.courseid join period on courseperiod.periodid = period.periodid join daytype on daytype.daytypeid = period.typedayid  join type on type.typeid = daytype.scheduletypeid join userinfo on userinfo.userid = course.teacherid join classroom on classroom.classroomid = courseperiod.classroomid  join department on section.department = department.departmentid where typeid=@typeid and studentid =@userid and ((@schooldaynum % NULLIF(outofday, 0)= dayalt-1 and dateofweek=0)  or (dateofweek =@dateofweek)) order by periodstart";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@typeid", db.gettypeid(type,userid, now));
-                cmd.Parameters.AddWithValue("@dateofweek", (int)now.DayOfWeek);
+                cmd.Parameters.AddWithValue("@dateofweek", (int)now.DayOfWeek+7);
                 cmd.Parameters.AddWithValue("@userid", userid);
                 cmd.Parameters.AddWithValue("@schooldaynum", schooldaynum);
                 SqlDataReader rdr = cmd.ExecuteReader();
@@ -1064,53 +1082,73 @@ namespace SchoolsPortal.Models
         
         #endregion
         #region events
-        public bool checkifevent(int eventid,filterclass filter,DateTime date)
+        public bool checkifevent(int type,int eventid,int userid,DateTime date)
         {
             db db = new db();//db object
-            ArrayList events = new ArrayList();//arraylist of the different events
+            bool events = false;
             SqlConnection conn = db.openconn();//open conn
-            String sql = "SELECT * FROM ( SELECT event.eventid,event.eventtitle,event.description,event.startdate,  ROW_NUMBER() OVER(PARTITION BY event.eventid ORDER BY event.startdate) rn FROM Event join eventdisplay on event.eventid = eventdisplay.eventid join display on eventdisplay.displayid = display.displayid where event.eventid=@eventid and districtid= @districtid and postdate<@date and startdate>=DATEADD(dd, -1, @date) AND(courseid = 0";//get event sql query
-            for (int x = 0; x < filter.getcourse().Count; x++)//loop thru courses
+            if (type == 1)
             {
-                sql = sql + " OR courseid = @course" + x;//add possible course
+                String sql = "SELECT * FROM " +
+                    "( SELECT event.eventid,event.eventtitle,event.description,event.startdate,  ROW_NUMBER() " +
+                    "OVER(PARTITION BY event.eventid ORDER BY event.startdate) rn FROM Event " +
+                    "join eventdisplay on event.eventid = eventdisplay.eventid " +
+                    "join display on eventdisplay.displayid = display.displayid " +
+                    "where (event.eventid=@eventid) and (postdate<@date and startdate>=DATEADD(dd, -1, @date)) and" +
+                    "(districtid = @districtid) and " +
+                    "(schoolid = 0 or schoolid = @schoolid) and" +
+                    "(gradeid = 0 or gradeid = @gradeid) and" +
+                    "(typeid = 0 or typeid =1) and" +
+                    "(schoolyearid = 0 or schoolyearid = @schoolid) and" +
+                    "(courseid IN(select course.courseid from course join coursestudent on course.courseid = coursestudent.courseid where coursestudent.studentid = @userid) or courseid = 0) and" +
+                    "(sectionid IN(select section.sectionid from section join course on section.sectionid = course.courseid join coursestudent on course.courseid = coursestudent.courseid where coursestudent.studentid = @userid) or sectionid = 0) and" +
+                    "(teacherid IN(select teacherid from course join coursestudent on course.courseid = coursestudent.courseid where coursestudent.studentid = @userid) or teacherid = 0 )) a WHERE rn = 1 ";//more sql code
+                SqlCommand cmd = new SqlCommand(sql, conn);//command
+                cmd.Parameters.AddWithValue("@eventid", eventid);//add district parameter
+                cmd.Parameters.AddWithValue("@userid", userid);//add district parameter
+                cmd.Parameters.AddWithValue("@date", date);//add district parameter
+                cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type, userid));//add district parameter
+                cmd.Parameters.AddWithValue("@schoolid", db.getschool(type, userid));//add school parameter
+                cmd.Parameters.AddWithValue("@gradeid", db.getgrade(userid));//add grade 
+                SqlDataReader rdr = cmd.ExecuteReader();//datareader
+                if (rdr.Read())
+                {
+                    events = true;
+                }
+                rdr.Close();//close datareader
             }
-            sql = sql + ") AND(sectionid = 0";//add sectionid info
-            for (int x = 0; x < filter.getsection().Count; x++)//loop thru section
+            else
             {
-                sql = sql + " OR sectionid = @section" + x;//add possible section
+                String sql = "SELECT * FROM " +
+                    "( SELECT event.eventid,event.eventtitle,event.description,event.startdate,  ROW_NUMBER() " +
+                    "OVER(PARTITION BY event.eventid ORDER BY event.startdate) rn FROM Event " +
+                    "join eventdisplay on event.eventid = eventdisplay.eventid " +
+                    "join display on eventdisplay.displayid = display.displayid " +
+                    "where (event.eventid=@eventid) and(postdate<@date and startdate>=DATEADD(dd, -1, @date)) and" +
+                    "(districtid = @districtid) and " +
+                    "(schoolid = 0 or schoolid = @schoolid) and" +
+                    "(typeid = 0 or typeid =2) and" +
+                     "(departmentid = 0 or departmentid =@department) and" +
+                    "(schoolyearid = 0 or schoolyearid = @schoolid) and" +
+                    "(courseid IN(select course.courseid from course where course.teacherid = @userid) or courseid = 0) and" +
+                    "(sectionid IN(select section.sectionid from section join course on section.sectionid = course.courseid where course.teacherid = @userid) or sectionid = 0) and" +
+                    "(teacherid = @userid or teacherid = 0 )) a WHERE rn = 1 ";//more sql code
+                SqlCommand cmd = new SqlCommand(sql, conn);//command
+                cmd.Parameters.AddWithValue("@eventid", eventid);//add district parameter
+                cmd.Parameters.AddWithValue("@userid", userid);//add district parameter
+                cmd.Parameters.AddWithValue("@date", date);//add district parameter
+                cmd.Parameters.AddWithValue("@department", db.getdepartmentid(userid));//add district parameter
+                cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type, userid));//add district parameter
+                cmd.Parameters.AddWithValue("@schoolid", db.getschool(type, userid));//add school parameter
+                SqlDataReader rdr = cmd.ExecuteReader();//datareader
+                if (rdr.Read())
+                {
+                    events = true;
+                }
+                rdr.Close();//close datareader
             }
-            sql = sql + ") AND(teacherid = 0";//add teacher info
-            for (int x = 0; x < filter.getteacher().Count; x++)//loop thru teacger
-            {
-                sql = sql + " OR teacherid = @teacher" + x;//add possible teach
-            }
-            sql = sql + ") ) a WHERE rn = 1 ";//more sql code
-            SqlCommand cmd = new SqlCommand(sql, conn);//command
-            cmd.Parameters.AddWithValue("@date", date);
-            cmd.Parameters.AddWithValue("@eventid", eventid);
-            cmd.Parameters.AddWithValue("@districtid", filter.getdistrict());//add district parameter
-            cmd.Parameters.AddWithValue("@schoolid", filter.getschool());//add school parameter
-            cmd.Parameters.AddWithValue("@gradeid", filter.getgrade());//add grade 
-            for (int x = 0; x < filter.getcourse().Count; x++)//add course parameter
-            {
-                cmd.Parameters.AddWithValue("@course" + x, filter.getcourse()[x]);
-            }
-            for (int x = 0; x < filter.getsection().Count; x++)//add section paraameter
-            {
-                cmd.Parameters.AddWithValue("@section" + x, filter.getsection()[x]);
-            }
-            for (int x = 0; x < filter.getteacher().Count; x++)//add teacher parameter
-            {
-                cmd.Parameters.AddWithValue("@teacher" + x, filter.getteacher()[x]);
-            }
-            SqlDataReader rdr = cmd.ExecuteReader();//datareader
-            if (rdr.Read())
-            {
-                return true;//return true if an event match
-            }
-            rdr.Close();//close datareader
             db.closeconn(conn);//close conn
-            return false;//return as not event available to use
+            return events;//return list of event
         }
         public ArrayList getevents(int type,int userid,DateTime date)//get event using the filter
         {
@@ -1217,59 +1255,78 @@ namespace SchoolsPortal.Models
         }
         #endregion             
         #region newstories
-        public bool checkifnewstories(int newstories,filterclass filter,DateTime date)//get all newstories using filter
+        public bool checkifnewstories(int type,int newstoriesid,int userid,DateTime date)//get all newstories using filter
         {
             db db = new db();//db object
-            SqlConnection conn = db.openconn();//db open conn
-            String sql = "SELECT * FROM " +
-                "( SELECT newstories.newstoriesid,userinfo.firstname,userinfo.middlename,userinfo.lastname,userinfo.suffix,newstories.postdate,newstories.title,newstories.body,  ROW_NUMBER() " +
-                "OVER(PARTITION BY newstories.newstoriesid ORDER BY newstories.postdate) rn FROM newstories " +
-                "join newstoriesdisplay on newstories.newstoriesid = newstoriesdisplay.newstoriesid " +
-                "join display on newstoriesdisplay.displayid = display.displayid " +
-                "join userinfo on newstories.authorid = userinfo.userid " +
-                "where newstories.newstoriesid =@newstoriesid and " +
-                "districtid = @districtid and postdate<@date and startdate<@date AND enddate>@date AND(display.courseid = 0";//sql get newstories
-            for (int x = 0; x < filter.getcourse().Count; x++)//loop thru course
+            bool newstories = false;
+            SqlConnection conn = db.openconn();//db open conn  
+            if (type == 1)
             {
-                sql = sql + " OR display.courseid = @course" + x;//course parameter
+                String sql = "SELECT * FROM " +
+                    "( SELECT newstories.newstoriesid,userinfo.firstname,userinfo.middlename,userinfo.lastname,userinfo.suffix,newstories.postdate,newstories.title,newstories.body,  ROW_NUMBER() " +
+                    "OVER(PARTITION BY newstories.newstoriesid ORDER BY newstories.postdate) rn FROM newstories join newstoriesdisplay on newstories.newstoriesid = newstoriesdisplay.newstoriesid " +
+                    "join display on newstoriesdisplay.displayid = display.displayid " +
+                    "join userinfo on newstories.authorid = userinfo.userid " +
+                    "where " +
+                        "(newstories.newstoriesid = @newstoriesid) and" +
+                        "(districtid = @districtid) and " +
+                        "(schoolid = 0 or schoolid = @schoolid) and" +
+                        "(gradeid = 0 or gradeid = @gradeid) and" +
+                        "(typeid = 0 or typeid =1) and" +
+                        "(schoolyearid = 0 or schoolyearid = @schoolid) and" +
+                        "(courseid IN(select course.courseid from course join coursestudent on course.courseid = coursestudent.courseid where coursestudent.studentid = @userid) or courseid = 0) and" +
+                        "(sectionid IN(select section.sectionid from section join course on section.sectionid = course.courseid join coursestudent on course.courseid = coursestudent.courseid where coursestudent.studentid = @userid) or sectionid = 0) and" +
+                        "(teacherid IN(select teacherid from course join coursestudent on course.courseid = coursestudent.courseid where coursestudent.studentid = @userid) or teacherid = 0 )) a WHERE rn = 1 ";//more sql code
+                SqlCommand cmd = new SqlCommand(sql, conn);//command
+                cmd.Parameters.AddWithValue("@newstoriesid", newstoriesid);//add district parameter
+                cmd.Parameters.AddWithValue("@userid", userid);//add district parameter
+                cmd.Parameters.AddWithValue("@date", date);//add district parameter
+                cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type, userid));//add district parameter
+                cmd.Parameters.AddWithValue("@schoolid", db.getschool(type, userid));//add school parameter
+                cmd.Parameters.AddWithValue("@gradeid", db.getgrade(userid));//add grade 
+                SqlDataReader rdr = cmd.ExecuteReader();//datareader
+
+
+                if (rdr.Read())
+                {
+                    newstories = true;
+                }
+                rdr.Close();//close datareader
             }
-            sql = sql + ") AND(display.sectionid = 0";//sectionid filter
-            for (int x = 0; x < filter.getsection().Count; x++)//loop thru section
+            else
             {
-                sql = sql + " OR display.sectionid = @section" + x;//sectionparameter
+                String sql = "SELECT * FROM " +
+                    "( SELECT newstories.newstoriesid,userinfo.firstname,userinfo.middlename,userinfo.lastname,userinfo.suffix,newstories.postdate,newstories.title,newstories.body,  ROW_NUMBER() " +
+                    "OVER(PARTITION BY newstories.newstoriesid ORDER BY newstories.postdate) rn FROM newstories join newstoriesdisplay on newstories.newstoriesid = newstoriesdisplay.newstoriesid " +
+                    "join display on newstoriesdisplay.displayid = display.displayid " +
+                    "join userinfo on newstories.authorid = userinfo.userid " +
+                    "where (newstories.newstoriesid = @newstoriesid) and" +
+                     "(districtid = @districtid) and " +
+                    "(schoolid = 0 or schoolid = @schoolid) and" +
+                    "(typeid = 0 or typeid =2) and" +
+                     "(departmentid = 0 or departmentid =@department) and" +
+                    "(schoolyearid = 0 or schoolyearid = @schoolid) and" +
+                    "(courseid IN(select course.courseid from course where course.teacherid = @userid) or courseid = 0) and" +
+                    "(sectionid IN(select section.sectionid from section join course on section.sectionid = course.courseid where course.teacherid = @userid) or sectionid = 0) and" +
+                    "(teacherid = @userid or teacherid = 0 )) a WHERE rn = 1 ";//more sql code
+                SqlCommand cmd = new SqlCommand(sql, conn);//command
+                cmd.Parameters.AddWithValue("@newstoriesid", newstoriesid);//add district parameter
+                cmd.Parameters.AddWithValue("@userid", userid);//add district parameter
+                cmd.Parameters.AddWithValue("@date", date);//add district parameter
+                cmd.Parameters.AddWithValue("@districtid", db.getdistrictid(type, userid));//add district parameter
+                cmd.Parameters.AddWithValue("@schoolid", db.getschool(type, userid));//add school parameter              
+                cmd.Parameters.AddWithValue("@department", db.getdepartmentid(userid));//add district parameter
+                SqlDataReader rdr = cmd.ExecuteReader();//datareader
+
+
+                if (rdr.Read())
+                {
+                    newstories = true;
+                }
+                rdr.Close();//close datareader
             }
-            sql = sql + ") AND(display.teacherid = 0";//teacheridfilter
-            for (int x = 0; x < filter.getteacher().Count; x++)//loop thru teacher
-            {
-                sql = sql + " OR display.teacherid = @teacher" + x;//teacherparameter
-            }
-            sql = sql + ") ) a WHERE rn = 1 ";
-            SqlCommand cmd = new SqlCommand(sql, conn);//command
-            cmd.Parameters.AddWithValue("@date", date);
-            cmd.Parameters.AddWithValue("@districtid", filter.getdistrict());//parameter set district
-            cmd.Parameters.AddWithValue("@schoolid", filter.getschool());//pparameter set school
-            cmd.Parameters.AddWithValue("@gradeid", filter.getgrade());//parameter set grade
-            cmd.Parameters.AddWithValue("@newstoriesid", newstories);//parameter set grade
-            for (int x = 0; x < filter.getcourse().Count; x++)//loop thru course parameter
-            {
-                cmd.Parameters.AddWithValue("@course" + x, filter.getcourse()[x]);
-            }
-            for (int x = 0; x < filter.getsection().Count; x++)//loop thru section parameter
-            {
-                cmd.Parameters.AddWithValue("@section" + x, filter.getsection()[x]);
-            }
-            for (int x = 0; x < filter.getteacher().Count; x++)//loop thru teacher parameter
-            {
-                cmd.Parameters.AddWithValue("@teacher" + x, filter.getteacher()[x]);//
-            }
-            SqlDataReader rdr = cmd.ExecuteReader();//data reader
-           if (rdr.Read())
-            {
-                return true;
-            }
-            rdr.Close();//close datareader
             db.closeconn(conn);//close conn
-            return false;
+            return newstories;//return arraylist of newstories
         }
         public ArrayList getnewstories(int type,int userid,DateTime date)//get all newstories using filter
         {
