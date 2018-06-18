@@ -64,41 +64,48 @@
                     </tr>
                     @foreach (dynamic p in (ViewBag.assignment))
                     {
-                        <tr>
+                    <tr>
                         <td>@p.getduedate().ToShortDateString()</td>
-                        <td>@p.gettitle()</td>
-                        <td>@p.getgradingperiod()</td>
-                        <td>@p.getcategory()</td>
-                        @if (p.getpoints() == -1)
+                        @if (@ViewBag.type == 2)
                         {
-                            if (p.gettestsid() != 0 && p.getteststatus() == 0)
-                            {
-                                <td>
-                                <form action="/Courses/Test" method="post">
-                                <input id="testsid" name="testsid" type="hidden" value="@p.gettestsid()" />
-                                <input value="Take Test" type="submit" />
-                                </form>
-                                </td>
-                            }
-                            else
-                            {
-                            <td>-</td>
-                            }
+                    <td><a href="/courses/assignment?assignmentid=@p.getassignment()">@p.gettitle()</a></td>
                         }
                         else
                         {
-                            <td>@p.getpoints()</td>
+                            <td>@p.gettitle()</td>
                         }
-                        <td>@p.getscores()</td>
-                        @if (p.getpoints() == -1)
-                        {
-                            <td>-</td>
-                        }
-                        else
-                        {
-                            <td>@(p.getpoints() / p.getscores() * 100)%</td>
-                        }
-                        </tr>
+                    <td>@p.getgradingperiod()</td>
+                    <td>@p.getcategory()</td>
+                    @if (p.getpoints() == -1)
+{
+    if (p.gettestsid() != 0 && p.getteststatus() == 0)
+    {
+                    <td>
+                        <form action="/Courses/Test" method="post">
+                            <input id="testsid" name="testsid" type="hidden" value="@p.gettestsid()" />
+                            <input value="Take Test" type="submit" />
+                        </form>
+                    </td>
+}
+else
+{
+                    <td>-</td>
+}
+}
+else
+{
+                    <td>@p.getpoints()</td>
+}
+                    <td>@p.getscores()</td>
+                    @if (p.getpoints() == -1)
+{
+                    <td>-</td>
+}
+else
+{
+                    <td>@(p.getpoints() / p.getscores() * 100)%</td>
+}
+                    </tr>
                      }
                 </table>
             </div>

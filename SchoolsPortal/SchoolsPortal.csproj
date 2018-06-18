@@ -167,6 +167,7 @@
     <Compile Include="Models\address.cs" />
     <Compile Include="Models\answers.cs" />
     <Compile Include="Models\assignment.cs" />
+    <Compile Include="Models\assignmentid.cs" />
     <Compile Include="Models\categorygrade.cs" />
     <Compile Include="Models\course.cs" />
     <Compile Include="Models\courseselect.cs" />
@@ -252,6 +253,7 @@
     <Content Include="Views\Courses\Result.cshtml" />
     <Content Include="Views\Sport\sports.cshtml" />
     <Content Include="Views\ReportCard\Index.cshtml" />
+    <Content Include="Views\Courses\Assignment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -70,9 +70,21 @@ namespace SchoolsPortal.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public ActionResult Assignment(int assignmentid)
+        {
+            db db = new db();
+            if (db.checkifteacher(assignmentid, ((user)Session["user"]).getusercred().getuserid()))
+            {//user is teacher of class
+                ViewBag.assignment = db.getassignmentbyid(assignmentid);
+                return View();//redirect to home page if taking to access course page not part of
+            } else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
 
-            // GET: Course
-            public ActionResult Index(int coursesid)
+        // GET: Course
+        public ActionResult Index(int coursesid)
         {
             db db = new db();//create db object
             if (db.checkinclass(coursesid, ((user)Session["user"]).getusercred().getuserid())) {//class to make sure user have access to this page

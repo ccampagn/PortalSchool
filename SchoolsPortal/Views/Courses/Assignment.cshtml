@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="~/styles.css">
+    <script type="text/javascript" src="~/Scripts/JavaScript.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+</head>
+<body>
+    <div id="wholehomepage">
+        <div id="navbar">
+            <ul id="main-menu" class="sm sm-blue">
+                <li><a href="~/Home">Home</a></li>
+                <li><a href="#news">News</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Dropdown</a>
+                    <div class="dropdown-content">
+                        <a href="#">Link 1</a>
+                        <a href="#">Link 2</a>
+                        <a href="#">Link 3</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <br />
+        <div id="homepage">
+            <div id="courses">
+                <table id="tables">
+                    <tr>
+                        <th colspan="3">Assignment By Students</th>
+                    </tr>
+                    <tr>
+                        <th>Name</th>
+                        <th>Points</th>
+                        <th>Possible Point</th>
+                    </tr>
+                    @foreach (dynamic p in (ViewBag.assignment))
+                    {
+                                   
+                    <tr>
+                        <td>@p.getname().getfirstname() @p.getname().getlastname()</td>
+                        <td>@p.getscores()</td>
+                        <td>@p.getpoints()</td>
+                    </tr>
+                    }
+              </table>
+
+                </div>
+            </div>
+        </div>
+</body>
+</html>

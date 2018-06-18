@@ -87,6 +87,42 @@ namespace SchoolsPortal.Models
             return sportlist;
         }
 
+        public bool checkifteacher(int assignmentid, int userid)
+        {
+            db db = new db();//db object
+            SqlConnection conn = db.openconn();//open conn
+            String sql = "SELECT * FROM [dbo].[assignment] join course on course.sectionid = assignment.sectionid where assignmentid =@assignmentid and teacherid=@userid";//check if in course
+            SqlCommand cmd = new SqlCommand(sql, conn);//run sql command
+            cmd.Parameters.AddWithValue("@assignmentid", assignmentid);//set courseid parameter
+            cmd.Parameters.AddWithValue("@userid", userid);
+            SqlDataReader rdr = cmd.ExecuteReader();//data reader
+            if (rdr.Read())//check if can read result
+            {
+                return true;
+            }
+            rdr.Close();//close datareader
+            db.closeconn(conn);//close conn
+            return false;//return if in course of not
+        }
+
+        public ArrayList getassignmentbyid(int assignmentid)
+        {
+            db db = new db();
+            ArrayList assignment = new ArrayList();
+            SqlConnection conn = db.openconn();
+            String sql = "SELECT nameid,firstname,middlename,lastname,suffix,scores,points FROM [dbo].[assignment] join assignmentscorers on assignmentscorers.assignmentid = assignment.assignmentid join userinfo on assignmentscorers.userid = userinfo.nameid where assignment.assignmentid =@assignmentid";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@assignmentid", assignmentid);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                assignment.Add(new assignmentid(new name(Convert.ToInt32(rdr["nameid"]), rdr["firstname"].ToString(), rdr["middlename"].ToString(), rdr["lastname"].ToString(), rdr["suffix"].ToString(), null, new DateTime()), Convert.ToDecimal(rdr["scores"]), Convert.ToDecimal(rdr["points"])));
+            }
+            rdr.Close();
+            db.closeconn(conn);
+            return assignment;
+        }
+
         public bool checkifgraded(int courseid)
         {
             db db = new db();//db object
